@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import './App.css';
 import { useFetchPetsData } from "./hooks/useFetchPetsData";
-import { PetsList } from './components/PetsList';
+import { PetsListView } from './components/PetsListView';
 
 const App = () => {
     const petsDataGetter = useFetchPetsData();
@@ -10,7 +10,7 @@ const App = () => {
         <>
             <h1>title</h1>
             <Suspense fallback={<>loading</>}>
-                <PetsList petsDataGetter={petsDataGetter} />
+                <PetsListView petsDataGetter={petsDataGetter} />
             </Suspense>
         </>
     )
