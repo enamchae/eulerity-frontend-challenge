@@ -1,27 +1,24 @@
 import { PetsDataGetter } from "@/hooks/useFetchPetsData";
 import { PetView } from "./PetView";
 import styled from "styled-components";
+import { RefObject, useRef } from "react";
 
-export const PetsListView = ({petsDataGetter}: {petsDataGetter: PetsDataGetter}) => {
+export const PetsListView = ({
+    petsDataGetter,
+    listScrollerRef,
+}: {
+    petsDataGetter: PetsDataGetter,
+    listScrollerRef: RefObject<HTMLDivElement>,
+}) => {
     const petsList = petsDataGetter.tryGet();
 
     return (
-        <PetsListContainer>
-            {petsList.map(pet => (
-                <PetView
-                    key={pet.id}
-                    pet={pet}
-                />
-            ))}
-        </PetsListContainer>
+        petsList.map(pet => (
+            <PetView
+                key={pet.id}
+                pet={pet}
+                listScrollerRef={listScrollerRef}
+            />
+        ))
     );
 };
-
-const PetsListContainer = styled.div`
-display: grid;
-grid-template-columns: repeat(3, 1fr);
-gap: 1rem;
-height: 100%;
-
-perspective: 1000px;
-`;

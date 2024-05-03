@@ -1,72 +1,95 @@
 import { Pet } from "$/Pet";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { RefObject, useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 
-export const PetView = ({pet}: {pet: Pet}) => {
+/** Proportion of the scroller that it takes for an entry to appear from the bottom and disappear at the top */
+const SCROLLER_PROPORTION = 0.65;
+
+export const PetView = ({
+    pet,
+    listScrollerRef,
+}: {
+    pet: Pet,
+    listScrollerRef: RefObject<HTMLDivElement>,
+}) => {
     const [rotation, setRotation] = useState(0);
     const [translation, setTranslation] = useState(0);
 
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    const boundingBox = useMemo(() => containerRef.current?.getBoundingClientRect(), [containerRef]);
+    const spacerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const onscroll = () => {
-            const yProportion = ((containerRef.current?.offsetTop ?? 0) + (containerRef.current?.offsetWidth ?? 0) / 2 - scrollY) / innerHeight;
+        const updateMovementProgress = () => {
+            const topToBottomDistance = (listScrollerRef.current?.offsetHeight ?? 1) * SCROLLER_PROPORTION;
+
+            const yProportion = (
+                // center of the entry element
+                (spacerRef.current?.offsetTop ?? 0)
+                + (spacerRef.current?.offsetHeight ?? 0) / 2
+
+                - (listScrollerRef.current?.scrollTop ?? 0)
+
+                // centering
+                - (listScrollerRef.current?.offsetHeight ?? 0) * (1 - SCROLLER_PROPORTION) / 2
+            ) / topToBottomDistance;
+
             const yProportionClamped = Math.max(-1, Math.min(1, yProportion * 2 - 1));
-            setRotation(-Math.asin(yProportionClamped));
-            setTranslation(Math.sqrt(1 - yProportionClamped**2) - 1);
+
+            setRotation(-Math.asin(yProportionClamped**3));
+            setTranslation(Math.sqrt(1 - yProportionClamped**4) - 1);
         };
-        addEventListener("scroll", onscroll);
+        listScrollerRef.current?.addEventListener("scroll", updateMovementProgress);
+        addEventListener("resize", updateMovementProgress);
+        updateMovementProgress();
 
         return () => {
-            removeEventListener("scroll", onscroll);
+            listScrollerRef.current?.removeEventListener("scroll", updateMovementProgress);
+            removeEventListener("resize", updateMovementProgress);
         };
-    }, []);
+    }, [listScrollerRef]);
 
     return (
-        <PetContainer
-            ref={containerRef}
-            $rotation={String(rotation)}
-            $translation={String(translation)}
-        >
-            <PetImage src={pet.imageUrl} />
+        <GridSpaceCorrection ref={spacerRef}>
+            <PetContainer
+                $rotation={rotation}
+                $translation={translation}
+            >
+                <PetImage src={pet.imageUrl} />
 
-            <PetTextContainer>
-                <PetText className="pet-text">
-                    <PetTitle>{pet.title}</PetTitle>
-                    <PetDesc>{pet.desc}</PetDesc>
-                </PetText>
-            </PetTextContainer>
-        </PetContainer>
+                <PetTextContainer>
+                    <PetText className="pet-text">
+                        <PetTitle>{pet.title}</PetTitle>
+                        <PetDesc>{pet.desc}</PetDesc>
+                    </PetText>
+                </PetTextContainer>
+            </PetContainer>
+        </GridSpaceCorrection>
     );
 };
 
 const PetContainer = styled.div.attrs<{
-    $rotation: string,
-    $translation: string,
+    $rotation: number,
+    $translation: number,
 }>(props => ({
     style: {
         "--rotation": `${props.$rotation}rad`,
-        "--translation": `${props.$translation}vh`,
+        "--translation": `${props.$translation * innerHeight}px`,
     },
 }))`
 --rotation: 0rad;
---translation: 0vh;
+--translation: 0;
 
 display: grid;
-height: 16rem;
 overflow: hidden;
-cursor: pointer;
 
 border-radius: 6rem 4rem / 5rem 3rem;
+cursor: pointer;
 
 user-select: none;
 
+// backface-visibility: hidden;
 transform: translateZ(var(--translation)) rotateX(var(--rotation));
 
-transition:
-        transform 1s cubic-bezier(.2,2,.4,1);
+transition: transform 1s cubic-bezier(.2,1.4,.4,1);
 
 &:hover {
     transform: scale(1.03125);
@@ -150,4 +173,13 @@ font-size: 2rem;
 `;
 
 const PetDesc = styled.div`
+`;
+
+const GridSpaceCorrection = styled.div`
+width: 100%;
+height: 100%;
+display: grid;
+
+perspective: 1000px;
+
 `;
