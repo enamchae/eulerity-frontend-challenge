@@ -3,6 +3,7 @@ export type PetJson = {
     imageUrl: string,
     title: string,
     desc: string,
+    url: string,
     createdTimestamp: string,
 };
 
@@ -15,6 +16,7 @@ export class Pet {
         readonly imageUrl: string,
         readonly title: string,
         readonly desc: string,
+        readonly url: string,
         readonly createdTimestamp: Date,
     ) {}
 
@@ -24,6 +26,7 @@ export class Pet {
             pet.imageUrl,
             pet.title,
             pet.desc,
+            pet.url,
             new Date(pet.createdTimestamp),
         ));
     }

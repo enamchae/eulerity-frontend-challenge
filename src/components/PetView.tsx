@@ -1,13 +1,39 @@
 import { Pet } from "$/Pet";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 
 export const PetView = ({pet}: {pet: Pet}) => {
+    const [rotation, setRotation] = useState(0);
+    const [translation, setTranslation] = useState(0);
+
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const boundingBox = useMemo(() => containerRef.current?.getBoundingClientRect(), [containerRef]);
+
+    useEffect(() => {
+        const onscroll = () => {
+            const yProportion = ((containerRef.current?.offsetTop ?? 0) + (containerRef.current?.offsetWidth ?? 0) / 2 - scrollY) / innerHeight;
+            const yProportionClamped = Math.max(-1, Math.min(1, yProportion * 2 - 1));
+            setRotation(-Math.asin(yProportionClamped));
+            setTranslation(Math.sqrt(1 - yProportionClamped**2) - 1);
+        };
+        addEventListener("scroll", onscroll);
+
+        return () => {
+            removeEventListener("scroll", onscroll);
+        };
+    }, []);
+
     return (
-        <PetContainer>
+        <PetContainer
+            ref={containerRef}
+            $rotation={String(rotation)}
+            $translation={String(translation)}
+        >
             <PetImage src={pet.imageUrl} />
 
             <PetTextContainer>
-                <PetText>
+                <PetText className="pet-text">
                     <PetTitle>{pet.title}</PetTitle>
                     <PetDesc>{pet.desc}</PetDesc>
                 </PetText>
@@ -16,7 +42,18 @@ export const PetView = ({pet}: {pet: Pet}) => {
     );
 };
 
-const PetContainer = styled.div`
+const PetContainer = styled.div.attrs<{
+    $rotation: string,
+    $translation: string,
+}>(props => ({
+    style: {
+        "--rotation": `${props.$rotation}rad`,
+        "--translation": `${props.$translation}vh`,
+    },
+}))`
+--rotation: 0rad;
+--translation: 0vh;
+
 display: grid;
 height: 16rem;
 overflow: hidden;
@@ -24,9 +61,12 @@ cursor: pointer;
 
 border-radius: 6rem 4rem / 5rem 3rem;
 
-transition:
-        transform .25s cubic-bezier(.2,2,.4,1);
+user-select: none;
 
+transform: translateZ(var(--translation)) rotateX(var(--rotation));
+
+transition:
+        transform 1s cubic-bezier(.2,2,.4,1);
 
 &:hover {
     transform: scale(1.03125);
@@ -34,16 +74,15 @@ transition:
     > img {
         transform: scale(1.125);
         filter: brightness(1.25);
-
     }
 
-    > div > div {
+    .pet-text {
         gap: 0;
         margin-bottom: 0;
 
         transition:
                 gap 1s cubic-bezier(.4,1.25,.4,1),
-                margin-bottom .5s cubic-bezier(.2,1.15,.4,1);
+                margin-bottom .5s cubic-bezier(.2,1,.7,1);
     }
 }
 
@@ -101,8 +140,8 @@ margin-bottom: calc(-1 * var(--text-desc-spacing) - 2em);
 
 
 transition:
-        gap .25s cubic-bezier(.5,0,.5,1),
-        margin-bottom .25s ease-in-out;
+        gap .5s cubic-bezier(.5,0,.5,1),
+        margin-bottom .5s ease-in-out;
 `;
 
 const PetTitle = styled.div`
