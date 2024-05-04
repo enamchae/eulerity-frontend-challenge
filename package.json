@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "client-zip": "^2.4.5",
     "jotai": "^2.8.0",
     "json5": "^2.2.3",
     "react": "^18.2.0",

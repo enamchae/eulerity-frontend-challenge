@@ -1,10 +1,11 @@
 import styled from "styled-components";
 import { useAtom } from "jotai";
+import { downloadZip } from "client-zip";
 import { Dropdown } from "./Dropdown";
 import { Button } from "./Button";
 import { selectedPetsAtom, settingsAtom, visiblePetsAtom } from "@/store";
 import { ClickAction, SortKey, SortOrder } from "$/Settings";
-import { baseInputBorderCss, buttonClickEffectCss, buttonHoverEffectCss, inputBorderRadiusCss, resetInputCss } from "@/styles";
+import { baseInputBorderCss, buttonClickEffectCss, buttonHoverEffectCss, resetInputCss } from "@/styles";
 import { useFetchPetsData } from "@/hooks/useFetchPetsData";
 import { Pet } from "@/lib/Pet";
 import { useRef } from "react";
@@ -80,8 +81,37 @@ export const ControlBar = ({
                         {selectedPets.size} pet{selectedPets.size === 1 ? " is" : "s are"} selected.
                         <Button
                             disabled={selectedPets.size === 0}
-                            onClick={() => {
-                                
+                            onClick={async () => {
+                                const selectedPetsArray = [...selectedPets];
+
+                                if (selectedPetsArray.length > 1) {
+                                    const blob = await downloadZip(
+                                        (await Promise.all(selectedPetsArray.map(pet => fetch(pet.imageUrl))))
+                                                .map((response, i) => ({
+                                                    input: response,
+                                                    name: `${selectedPetsArray[i].title}.jpg`,
+                                                }))
+                                    ).blob();
+                                    const url = URL.createObjectURL(blob);
+    
+                                    const anchor = document.createElement("a");
+                                    anchor.href = url;
+                                    anchor.download = "pets.zip";
+                                    anchor.click();
+    
+                                    URL.revokeObjectURL(url);
+                                } else {
+                                    const pet = selectedPetsArray[0];
+                                    const blob = await (await fetch(pet.imageUrl)).blob();
+                                    const url = URL.createObjectURL(blob);
+    
+                                    const anchor = document.createElement("a");
+                                    anchor.href = url;
+                                    anchor.download = `${pet.title}.jpg`;
+                                    anchor.click();
+    
+                                    URL.revokeObjectURL(url);
+                                }
                             }}
                         >
                             Download selected
@@ -176,7 +206,7 @@ z-index: 1;
 const ControlBarRow = styled.div`
 display: flex;
 flex-wrap: wrap;
-gap: 0.5rem 6rem;
+gap: 0.5rem 5rem;
 align-items: center;
 position: relative;
 overflow-x: auto;
@@ -207,6 +237,7 @@ ${baseInputBorderCss}
 width: 60ch;
 display: flex;
 align-items: stretch;
+gap: 0.5rem;
 
 cursor: text;
 `;
@@ -214,9 +245,6 @@ cursor: text;
 const SearchBarInput = styled.input`
 ${resetInputCss}
 flex-grow: 1;
-outline-offset: 0.5rem;
-
-${inputBorderRadiusCss}
 `;
 
 const SearchBarClearButton = styled.button`
