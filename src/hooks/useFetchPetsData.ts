@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Pet } from "$/Pet";
 import Json5 from "json5";
 
@@ -46,7 +46,8 @@ export const useFetchPetsData = (): PetsDataGetter => {
                     throw promise;
 
                 case PromiseState.Rejected:
-                    throw new Error();
+                    return [];
+                    // throw new Error();
             }
         },
 

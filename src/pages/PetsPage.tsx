@@ -5,8 +5,12 @@ import styled from "styled-components";
 import { ControlBar } from "@/components/ControlBar";
 import { Loading } from "@/components/Loading";
 import { TitleBar } from "@/components/TitleBar";
+import { useAtom } from "jotai";
+import { visiblePetsAtom } from "@/store";
 
 export const PetsPage = () => {
+    const [visiblePets, setVisiblePets] = useAtom(visiblePetsAtom);
+
     const listScrollerRef = useRef<HTMLDivElement>(null);
 
     return (
@@ -17,7 +21,10 @@ export const PetsPage = () => {
                 ref={listScrollerRef}
             >
                 <Suspense fallback={<Loading />}>
-                    <PetsListView listScrollerRef={listScrollerRef} />
+                    {
+                        visiblePets &&
+                        <PetsListView listScrollerRef={listScrollerRef} />
+                    }
                 </Suspense>
 
                 {/* To ensure that the empty 1st and 3rd grid rows can be scrolled into (functioning as padding) */}

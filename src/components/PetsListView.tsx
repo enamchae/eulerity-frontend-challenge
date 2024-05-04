@@ -2,9 +2,9 @@ import { useFetchPetsData } from "@/hooks/useFetchPetsData";
 import { PetView } from "./PetView";
 import styled from "styled-components";
 import { useAtom } from "jotai";
-import { RefObject, useMemo } from "react";
+import { RefObject, useEffect, useMemo } from "react";
 import { SortKey, SortOrder } from "$/Settings";
-import { settingsAtom } from "@/store";
+import { settingsAtom, visiblePetsAtom } from "@/store";
 
 export const PetsListView = ({
     listScrollerRef,
@@ -14,6 +14,7 @@ export const PetsListView = ({
     const petsDataGetter = useFetchPetsData();
 
     const [settings, setSettings] = useAtom(settingsAtom);
+    const [visiblePets, setVisiblePets] = useAtom(visiblePetsAtom);
 
     // naive searching
     const petsListFiltered = useMemo(
@@ -35,8 +36,12 @@ export const PetsListView = ({
                     }
                     return false;
                 }),
-        [petsDataGetter, settings.searchQuery]
+        [settings.searchQuery]
     );
+
+    useEffect(() => {
+        setVisiblePets(petsListFiltered);
+    }, [petsListFiltered, setVisiblePets]);
 
     const petsList = useMemo(
         () => petsListFiltered
