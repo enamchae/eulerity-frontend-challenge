@@ -1,28 +1,25 @@
 import { Suspense, useRef } from "react";
 import "@/App.css";
 import { PetsListView } from "@/components/PetsListView";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { ControlBar } from "@/components/ControlBar";
 import { Loading } from "@/components/Loading";
 import { TitleBar } from "@/components/TitleBar";
 import { useAtom } from "jotai";
-import { visiblePetsAtom } from "@/store";
-import { Layout } from "./Layout";
+import { viewingPetInfoAtom, visiblePetsAtom } from "@/store";
+import { PetInfoOverlay } from "@/components/PetInfoOverlay";
 
 export const PetsPage = () => {
     const [visiblePets, setVisiblePets] = useAtom(visiblePetsAtom);
+    const [viewingPetInfo, setViewingPetInfo] = useAtom(viewingPetInfoAtom);
 
     const listScrollerRef = useRef<HTMLDivElement>(null);
 
     return (
-        <Layout style={css`
-grid-template-rows: 25vh 1fr auto;
-`}>
+        <Grid>
             <TitleBar listScrollerRef={listScrollerRef} />
 
-            <PetsListScroller
-                ref={listScrollerRef}
-            >
+            <PetsListScroller ref={listScrollerRef}>
                 <Suspense fallback={<Loading />}>
                     {
                         visiblePets &&
@@ -44,14 +41,26 @@ grid-template-rows: 25vh 1fr auto;
                     }, 0);
                 }}
             />
-        </Layout>
+
+            {
+                viewingPetInfo &&
+                <PetInfoOverlay pet={viewingPetInfo} />
+            }
+        </Grid>
     );
 };
 
+const Grid = styled.div`
+display: grid;
+height: 100vh;
+
+> * {
+    grid-area: 1/1;
+}
+`
+
 const PetsListScroller = styled.div`
 --half-height: 0;
-
-grid-area: 1/1 / -1/1;
 
 overflow-y: auto;
 overflow-x: hidden;

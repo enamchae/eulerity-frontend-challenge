@@ -48,6 +48,7 @@ export const TitleBar = ({
     );
 };
 
+//@ts-ignore
 const TitleBarContainer = styled.div.attrs<{ $movementProgress: number }>(props => ({
     style: {
         "--movement-progress": props.$movementProgress,
@@ -55,7 +56,8 @@ const TitleBarContainer = styled.div.attrs<{ $movementProgress: number }>(props 
 }))`
 --movement-progress: 0;
 
-grid-area: 1/1;
+height: 25vh;
+
 position: relative;
 padding-left: var(--side-padding);
 padding-right: var(--side-padding);

@@ -12,3 +12,5 @@ export const settingsAtom = atom(<Settings>{
 export const selectedPetsAtom = atom(new Set<Pet>());
 
 export const visiblePetsAtom = atom<Pet[]>([]);
+
+export const viewingPetInfoAtom = atom<Pet | null>(null);

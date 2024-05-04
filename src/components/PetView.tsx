@@ -3,8 +3,9 @@ import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import { useAtom } from "jotai";
 import styled, { keyframes } from "styled-components";
 import { fadeIn } from "@/styles";
-import { selectedPetsAtom, settingsAtom } from "@/store";
+import { selectedPetsAtom, settingsAtom, viewingPetInfoAtom } from "@/store";
 import { ClickAction } from "@/lib/Settings";
+import { useNavigate } from "react-router-dom";
 
 /** Proportion of the scroller that it takes for an entry to appear from the bottom and disappear at the top */
 const SCROLLER_PROPORTION = 0.65;
@@ -18,6 +19,7 @@ export const PetView = ({
 }) => {
     const [settings, setSettings] = useAtom(settingsAtom);
     const [selectedPets, setSelectedPets] = useAtom(selectedPetsAtom);
+    const [viewingPetInfo, setViewingPetInfo] = useAtom(viewingPetInfoAtom);
 
     const [rotation, setRotation] = useState(0);
     const [translation, setTranslation] = useState(0);
@@ -25,6 +27,8 @@ export const PetView = ({
     const [animationOvershoot, setAnimationOvershoot] = useState(0)
 
     const containerRef = useRef<HTMLDivElement>(null);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         setAnimationLag(Math.random() + 0.5);
@@ -83,6 +87,8 @@ export const PetView = ({
                         break;
 
                     case ClickAction.ViewDetails:
+                        history.pushState({}, "", `/pet/${pet.id}`);
+                        setViewingPetInfo(pet);
                         break;
                 }
             }}
@@ -118,11 +124,13 @@ export const PetView = ({
 };
 
 /** Handles the transform of the pet entry due to the list scroll position */
+//@ts-ignore
 const PetScrollerTransformContainer = styled.div.attrs<{
     $rotation: number,
     $translation: number,
     $animationLag: number,
     $animationOvershoot: number,
+    //@ts-ignore
 }>(props => ({
     style: {
         "--rotation": `${props.$rotation}rad`,

@@ -9,6 +9,7 @@ import { baseInputBorderCss, buttonClickEffectCss, buttonHoverEffectCss, resetIn
 import { useFetchPetsData } from "@/hooks/useFetchPetsData";
 import { Pet } from "@/lib/Pet";
 import { useRef } from "react";
+import { ButtonX } from "./ButtonX";
 
 export const ControlBar = ({
     onSortChange,
@@ -167,7 +168,7 @@ export const ControlBar = ({
                         ref={searchBarInputRef}
                     />
 
-                    <SearchBarClearButton
+                    <ButtonX
                         onClick={() => {
                             setSettings({
                                 ...settings,
@@ -175,9 +176,7 @@ export const ControlBar = ({
                             });
                             searchBarInputRef.current?.focus();
                         }}
-                    >
-                        ✕
-                    </SearchBarClearButton>
+                    />
                 </SearchBar>
             </ControlBarRow>
         </ControlBarContainer>
@@ -185,7 +184,7 @@ export const ControlBar = ({
 };
 
 const ControlBarContainer = styled.div`
-grid-area: 3/1;
+align-self: end;
 
 display: flex;
 flex-direction: column;=
@@ -215,7 +214,7 @@ padding: 1.5rem 2rem;
 + div::before {
     content: " ";
     position: absolute;
-    width: 80%;
+    width: calc(100% - 8rem);
     height: 2px;
     top: 0;
     left: 50%;
@@ -245,15 +244,4 @@ cursor: text;
 const SearchBarInput = styled.input`
 ${resetInputCss}
 flex-grow: 1;
-`;
-
-const SearchBarClearButton = styled.button`
-${resetInputCss}
-${buttonHoverEffectCss}
-${buttonClickEffectCss}
-
-cursor: pointer;
-
-padding: 0.5rem;
-line-height: 1;
 `;
