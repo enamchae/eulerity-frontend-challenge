@@ -1,12 +1,13 @@
 import { Suspense, useRef } from "react";
 import "@/App.css";
 import { PetsListView } from "@/components/PetsListView";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { ControlBar } from "@/components/ControlBar";
 import { Loading } from "@/components/Loading";
 import { TitleBar } from "@/components/TitleBar";
 import { useAtom } from "jotai";
 import { visiblePetsAtom } from "@/store";
+import { Layout } from "./Layout";
 
 export const PetsPage = () => {
     const [visiblePets, setVisiblePets] = useAtom(visiblePetsAtom);
@@ -14,7 +15,9 @@ export const PetsPage = () => {
     const listScrollerRef = useRef<HTMLDivElement>(null);
 
     return (
-        <AppContainer>
+        <Layout style={css`
+grid-template-rows: 25vh 1fr auto;
+`}>
             <TitleBar listScrollerRef={listScrollerRef} />
 
             <PetsListScroller
@@ -41,23 +44,9 @@ export const PetsPage = () => {
                     }, 0);
                 }}
             />
-        </AppContainer>
+        </Layout>
     );
 };
-
-const AppContainer = styled.div`
---side-padding: 2rem;
-
---col-fg: #183a2f;
-
-margin: 0 auto;
-height: 100%;
-display: grid;
-grid-template-rows: 25vh 1fr auto;
-text-align: center;
-
-background: linear-gradient(90deg, #77c194, #74bfec, #b07ce3);
-`;
 
 const PetsListScroller = styled.div`
 --half-height: 0;
@@ -73,7 +62,6 @@ padding-left: var(--side-padding);
 padding-right: var(--side-padding);
 
 mask: linear-gradient(#0000, #000 30vh, #000 70vh, #0000);
-background: #fff;
 `;
 
 const GridSpacerHigh = styled.div`
