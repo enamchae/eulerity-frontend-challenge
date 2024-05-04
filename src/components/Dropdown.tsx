@@ -1,3 +1,4 @@
+import { baseClickableCss } from "@/styles";
 import { useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
 
@@ -44,18 +45,7 @@ export const Dropdown = <T,>({
 };
 
 const DropdownContainer = styled.select`
-color: inherit;
-font: inherit;
-
-border: 1.5px solid currentcolor;
-padding: 0.5rem;
-
-background: none;
-border-radius: 1.5rem / 1rem;
-
-&:hover {
-    background: #386a8f1f;
-}
+${baseClickableCss}
 
 &:focus {
     background: var(--col-fg);

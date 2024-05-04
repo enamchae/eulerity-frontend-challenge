@@ -57,6 +57,8 @@ const TitleBarContainer = styled.div.attrs<{ $movementProgress: number }>(props 
 
 grid-area: 1/1;
 position: relative;
+padding-left: var(--side-padding);
+padding-right: var(--side-padding);
 
 background: radial-gradient(ellipse at 50% 25%, rgba(22, 58, 70, calc(var(--movement-progress) * 0.75)), #0000 50%);
 
@@ -88,5 +90,7 @@ margin: 0;
 `;
 
 const Subtitle = styled.div`
-font-size: calc(1.5rem * var(--movement-progress) + 1.15rem * (1 - var(--movement-progress)));
+font-size: 1.15rem;
+
+transform: scale(calc(1.25 * var(--movement-progress) + (1 - var(--movement-progress))));
 `;

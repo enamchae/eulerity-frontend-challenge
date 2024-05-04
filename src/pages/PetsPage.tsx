@@ -84,15 +84,10 @@ const AppContainer = styled.div`
 margin: 0 auto;
 height: 100%;
 display: grid;
-grid-template-rows: 25vh 1fr 6rem;
+grid-template-rows: 25vh 1fr auto;
 text-align: center;
 
 background: linear-gradient(90deg, #77c194, #74bfec, #b07ce3);
-
-> * {
-    padding-left: var(--side-padding);
-    padding-right: var(--side-padding);
-}
 `;
 
 const PetsListScroller = styled.div`
@@ -105,6 +100,8 @@ overflow-x: hidden;
 display: grid;
 grid-auto-rows: 50vh 1fr 50vh;
 min-height: 100%;
+padding-left: var(--side-padding);
+padding-right: var(--side-padding);
 
 mask: linear-gradient(#0000, #000 30vh, #000 70vh, #0000);
 background: #fff;

@@ -2,6 +2,7 @@ import { Pet } from "$/Pet";
 import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { SortKey, SortOrder } from "./ControlBar";
+import { fadeIn } from "@/styles";
 
 /** Proportion of the scroller that it takes for an entry to appear from the bottom and disappear at the top */
 const SCROLLER_PROPORTION = 0.65;
@@ -82,25 +83,29 @@ export const PetView = ({
             >
                 <PetImage src={pet.imageUrl} />
 
-                <PetTextContainer>
+                <PetTextContainer
+                    className="pet-text-container"
+                >
                     <PetText className="pet-text">
                         <PetTitle>{pet.title}</PetTitle>
                         <PetDesc>{pet.desc}</PetDesc>
+                        <PetDesc>
+                            {pet.createdTimestamp.toLocaleDateString(undefined, {
+                                month: "short",
+                                year: "numeric",
+                                day: "numeric",
+                                weekday: "short",
+                                hour: "numeric",
+                                minute: "numeric",
+                                second: "numeric",
+                            })}
+                        </PetDesc>
                     </PetText>
                 </PetTextContainer>
             </PetInteractionTransformContainer>
         </PetScrollerTransformContainer>
     );
 };
-
-const fadeIn = keyframes`
-0% {
-    opacity: 0;
-}
-100% {
-    opacity: 1;
-}
-`;
 
 /** Handles the transform of the pet entry due to the list scroll position */
 const PetScrollerTransformContainer = styled.div.attrs<{
@@ -209,6 +214,7 @@ outline: ${props => props.$selected ? "0.5rem" : "0"} solid;
 
 border-radius: 6rem 4rem / 5rem 3rem;
 
+backface-visibility: hidden;
 transform: var(--selected-translation);
 filter: brightness(${props => props.$selected ? "1.25": "1"});
 
@@ -218,6 +224,10 @@ transition:
         outline .5s var(--animation-easing);
 animation: ${selectedPulsate} 1s infinite alternate ease-in-out;
 animation-play-state: ${props => props.$selected ? "running" : "paused"};
+
+.pet-text-container {
+    padding: ${props => props.$selected ? "1rem 1rem" : "1.5rem 1.5rem"};
+}
 `;
 
 const PetImage = styled.img`
@@ -235,12 +245,9 @@ transition:
 `;
 
 const PetTextContainer = styled.div`
---padding-bottom: 3rem;
-
 grid-area: 1/1;
 
 height: 100%;
-padding: 2rem var(--padding-bottom);
 display: flex;
 align-items: stretch;
 
@@ -248,27 +255,20 @@ text-align: left;
 color: #fff;
 background: radial-gradient(ellipse at bottom left, #0000009f, #0000003f 60%, #0000);
 z-index: 1;
+
+transition: padding .5s ease-in-out;
 `;
 
 const PetText = styled.div`
 display: flex;
 flex-direction: column;
 justify-content: end;
-
---text-desc-spacing: calc(1rem + var(--padding-bottom));
-
-gap: var(--text-desc-spacing);
-margin-bottom: calc(-1 * var(--text-desc-spacing) - 2em);
-
-
-transition:
-        gap .5s cubic-bezier(.5,0,.5,1),
-        margin-bottom .5s ease-in-out;
 `;
 
 const PetTitle = styled.h2`
 font-size: 2rem;
 line-height: 1;
+margin: 0.5rem 0;
 `;
 
 const PetDesc = styled.div`

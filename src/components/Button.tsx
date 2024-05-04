@@ -1,3 +1,4 @@
+import { baseClickableCss } from "@/styles";
 import styled from "styled-components";
 
 export const Button = ({
@@ -15,18 +16,7 @@ export const Button = ({
 };
 
 const ButtonContainer = styled.button`
-color: inherit;
-font: inherit;
-
-border: 1.5px solid currentcolor;
-padding: 0.5rem;
-
-background: none;
-border-radius: 1.5rem / 1rem;
-
-&:hover {
-    background: #386a8f1f;
-}
+${baseClickableCss}
 
 &:active {
     background: var(--col-fg);
