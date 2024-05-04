@@ -1,5 +1,5 @@
 import { Pet } from "$/Pet";
-import { RefObject, useEffect, useMemo, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 /** Proportion of the scroller that it takes for an entry to appear from the bottom and disappear at the top */
@@ -15,27 +15,27 @@ export const PetView = ({
     const [rotation, setRotation] = useState(0);
     const [translation, setTranslation] = useState(0);
 
-    const spacerRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const updateMovementProgress = () => {
-            const topToBottomDistance = (listScrollerRef.current?.offsetHeight ?? 1) * SCROLLER_PROPORTION;
-
             const yProportion = (
                 // center of the entry element
-                (spacerRef.current?.offsetTop ?? 0)
-                + (spacerRef.current?.offsetHeight ?? 0) / 2
+                (containerRef.current?.offsetTop ?? 0)
+                + (containerRef.current?.offsetHeight ?? 0) / 2
 
                 - (listScrollerRef.current?.scrollTop ?? 0)
 
                 // centering
                 - (listScrollerRef.current?.offsetHeight ?? 0) * (1 - SCROLLER_PROPORTION) / 2
-            ) / topToBottomDistance;
 
-            const yProportionClamped = Math.max(-1, Math.min(1, yProportion * 2 - 1));
+                + (listScrollerRef.current?.offsetHeight ?? 0) / 2
+            ) / ((listScrollerRef.current?.offsetHeight ?? 1) * SCROLLER_PROPORTION);
 
-            setRotation(-Math.asin(yProportionClamped**3));
-            setTranslation(Math.sqrt(1 - yProportionClamped**4) - 1);
+            const yProportionClamped = Math.tanh(yProportion * 2 - 1);
+
+            setRotation(-Math.asin(yProportionClamped));
+            setTranslation(Math.sqrt(1 - yProportionClamped**2) - 1);
         };
         listScrollerRef.current?.addEventListener("scroll", updateMovementProgress);
         addEventListener("resize", updateMovementProgress);
@@ -48,21 +48,20 @@ export const PetView = ({
     }, [listScrollerRef]);
 
     return (
-        <GridSpaceCorrection ref={spacerRef}>
-            <PetContainer
-                $rotation={rotation}
-                $translation={translation}
-            >
-                <PetImage src={pet.imageUrl} />
+        <PetContainer
+            ref={containerRef}
+            $rotation={rotation}
+            $translation={translation}
+        >
+            <PetImage src={pet.imageUrl} />
 
-                <PetTextContainer>
-                    <PetText className="pet-text">
-                        <PetTitle>{pet.title}</PetTitle>
-                        <PetDesc>{pet.desc}</PetDesc>
-                    </PetText>
-                </PetTextContainer>
-            </PetContainer>
-        </GridSpaceCorrection>
+            <PetTextContainer>
+                <PetText className="pet-text">
+                    <PetTitle>{pet.title}</PetTitle>
+                    <PetDesc>{pet.desc}</PetDesc>
+                </PetText>
+            </PetTextContainer>
+        </PetContainer>
     );
 };
 
@@ -86,13 +85,21 @@ cursor: pointer;
 
 user-select: none;
 
-// backface-visibility: hidden;
-transform: translateZ(var(--translation)) rotateX(var(--rotation));
+backface-visibility: hidden;
+transform:
+        translateZ(var(--translation))
+        rotateX(var(--rotation));
 
-transition: transform 1s cubic-bezier(.2,1.4,.4,1);
+z-index: 0;
+
+transition:
+        transform 1s cubic-bezier(.2,1.4,.4,1),
+        z-index 1s steps(1, start);
 
 &:hover {
-    transform: scale(1.03125);
+    transform:
+            scale(1.03125)
+            translateZ(var(--translation));
 
     > img {
         transform: scale(1.125);
@@ -107,15 +114,23 @@ transition: transform 1s cubic-bezier(.2,1.4,.4,1);
                 gap 1s cubic-bezier(.4,1.25,.4,1),
                 margin-bottom .5s cubic-bezier(.2,1,.7,1);
     }
+    z-index: 1;
+
+    transition:
+            transform 1s cubic-bezier(.2,1.4,.4,1),
+            z-index 1s steps(1, end);
 }
 
 &:active {
-    transform: scale(0.9);
+    transform:
+            scale(0.9)
+            translateZ(var(--translation));
 
     > img {
         transform: scale(1.25);
         filter: brightness(0.8);
     }
+    z-index: 1;
 }
 `;
 
@@ -167,19 +182,10 @@ transition:
         margin-bottom .5s ease-in-out;
 `;
 
-const PetTitle = styled.div`
-font-weight: 700;
+const PetTitle = styled.h2`
 font-size: 2rem;
+line-height: 1;
 `;
 
 const PetDesc = styled.div`
-`;
-
-const GridSpaceCorrection = styled.div`
-width: 100%;
-height: 100%;
-display: grid;
-
-perspective: 1000px;
-
 `;

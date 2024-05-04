@@ -19,6 +19,12 @@ grid-area: 3/1;
 
 display: flex;
 justify-content: space-between;
+margin: 0 var(--side-padding) var(--side-padding) var(--side-padding);
 
-background: #aaaaaa7f;
+background: #ffffffaf;
+border-radius: 4rem / 3rem;
+
+backdrop-filter: blur(8px);
+
+z-index: 1;
 `;
