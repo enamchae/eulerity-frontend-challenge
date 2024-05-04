@@ -1,16 +1,35 @@
 import { PetsDataGetter } from "@/hooks/useFetchPetsData";
 import { PetView } from "./PetView";
 import styled from "styled-components";
-import { RefObject } from "react";
+import { RefObject, useMemo } from "react";
+import { SortKey, SortOrder } from "./ControlBar";
 
 export const PetsListView = ({
     petsDataGetter,
     listScrollerRef,
+    sortKey,
+    sortOrder,
 }: {
     petsDataGetter: PetsDataGetter,
     listScrollerRef: RefObject<HTMLDivElement>,
+    sortKey: SortKey,
+    sortOrder: SortOrder,
 }) => {
-    const petsList = petsDataGetter.tryGet();
+    const petsList = useMemo(
+        () => petsDataGetter.tryGet()
+                .sort((a, b) => {
+                    const aBeforeB = sortKey === SortKey.CreationTime
+                            ? a.createdTimestamp.getTime() < b.createdTimestamp.getTime()
+                            : a.title < b.title;
+
+                    if (aBeforeB) {
+                        return sortOrder === SortOrder.Ascending ? -1 : 1;
+                    } else {
+                        return sortOrder === SortOrder.Ascending ? 1 : -1;
+                    }
+                }),
+        [petsDataGetter, sortKey, sortOrder]
+    );
 
     return (
         <ListContainer>
@@ -19,6 +38,8 @@ export const PetsListView = ({
                     key={pet.id}
                     pet={pet}
                     listScrollerRef={listScrollerRef}
+                    sortKey={sortKey}
+                    sortOrder={sortOrder}
                 />
             ))}
         </ListContainer>

@@ -39,7 +39,6 @@ export const TitleBar = ({
     }, [listScrollerRef]);
 
     return (
-        
         <TitleBarContainer $movementProgress={titleMovementProgress}>
             <ListTitle>
                 <Title>These are my pets!</Title>
@@ -59,7 +58,7 @@ const TitleBarContainer = styled.div.attrs<{ $movementProgress: number }>(props 
 grid-area: 1/1;
 position: relative;
 
-background: radial-gradient(ellipse at 50% 25%, rgba(24, 58, 47, calc(var(--movement-progress) * 0.75)), #0000 50%);
+background: radial-gradient(ellipse at 50% 25%, rgba(22, 58, 70, calc(var(--movement-progress) * 0.75)), #0000 50%);
 
 z-index: 1;
 `;

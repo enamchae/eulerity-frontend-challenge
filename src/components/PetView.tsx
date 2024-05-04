@@ -1,6 +1,7 @@
 import { Pet } from "$/Pet";
-import { RefObject, useEffect, useRef, useState } from "react";
+import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+import { SortKey, SortOrder } from "./ControlBar";
 
 /** Proportion of the scroller that it takes for an entry to appear from the bottom and disappear at the top */
 const SCROLLER_PROPORTION = 0.65;
@@ -8,9 +9,13 @@ const SCROLLER_PROPORTION = 0.65;
 export const PetView = ({
     pet,
     listScrollerRef,
+    sortKey,
+    sortOrder,
 }: {
     pet: Pet,
     listScrollerRef: RefObject<HTMLDivElement>,
+    sortKey: SortKey,
+    sortOrder: SortOrder,
 }) => {
     const [rotation, setRotation] = useState(0);
     const [translation, setTranslation] = useState(0);
@@ -21,29 +26,32 @@ export const PetView = ({
 
     useEffect(() => {
         setAnimationLag(Math.random() + 0.5);
-        setAnimationOvershoot(Math.random() * 0.8 + 1.2);
+        setAnimationOvershoot(Math.random() + 1.2);
     }, []);
 
+    
+    
+    const updateMovementProgress = useCallback(() => {
+        const yProportion = (
+            // center of the entry element
+            (containerRef.current?.offsetTop ?? 0)
+            + (containerRef.current?.offsetHeight ?? 0) / 2
+
+            - (listScrollerRef.current?.scrollTop ?? 0)
+
+            // centering
+            - (listScrollerRef.current?.offsetHeight ?? 0) * (1 - SCROLLER_PROPORTION) / 2
+
+            + (listScrollerRef.current?.offsetHeight ?? 0) / 2
+        ) / ((listScrollerRef.current?.offsetHeight ?? 1) * SCROLLER_PROPORTION);
+
+        const yProportionClamped = Math.tanh(yProportion * 2 - 1);
+
+        setRotation(-Math.asin(yProportionClamped));
+        setTranslation(Math.sqrt(1 - yProportionClamped**2) - 1);
+    }, [listScrollerRef]);
+
     useEffect(() => {
-        const updateMovementProgress = () => {
-            const yProportion = (
-                // center of the entry element
-                (containerRef.current?.offsetTop ?? 0)
-                + (containerRef.current?.offsetHeight ?? 0) / 2
-
-                - (listScrollerRef.current?.scrollTop ?? 0)
-
-                // centering
-                - (listScrollerRef.current?.offsetHeight ?? 0) * (1 - SCROLLER_PROPORTION) / 2
-
-                + (listScrollerRef.current?.offsetHeight ?? 0) / 2
-            ) / ((listScrollerRef.current?.offsetHeight ?? 1) * SCROLLER_PROPORTION);
-
-            const yProportionClamped = Math.tanh(yProportion * 2 - 1);
-
-            setRotation(-Math.asin(yProportionClamped));
-            setTranslation(Math.sqrt(1 - yProportionClamped**2) - 1);
-        };
         listScrollerRef.current?.addEventListener("scroll", updateMovementProgress);
         addEventListener("resize", updateMovementProgress);
         updateMovementProgress();
@@ -52,28 +60,34 @@ export const PetView = ({
             listScrollerRef.current?.removeEventListener("scroll", updateMovementProgress);
             removeEventListener("resize", updateMovementProgress);
         };
-    }, [listScrollerRef]);
+    }, [updateMovementProgress, listScrollerRef]);
+
+    useEffect(updateMovementProgress, [updateMovementProgress, sortKey, sortOrder]);
 
     return (
-        <PetContainer
+        <PetScrollerTransformContainer
             ref={containerRef}
             $rotation={rotation}
             $translation={translation}
             $animationLag={animationLag}
+            $animationOvershoot={animationOvershoot}
         >
-            <PetImage src={pet.imageUrl} />
+            <PetInteractionTransformContainer className="interaction-transform-container">
+                <PetImage src={pet.imageUrl} />
 
-            <PetTextContainer>
-                <PetText className="pet-text">
-                    <PetTitle>{pet.title}</PetTitle>
-                    <PetDesc>{pet.desc}</PetDesc>
-                </PetText>
-            </PetTextContainer>
-        </PetContainer>
+                <PetTextContainer>
+                    <PetText className="pet-text">
+                        <PetTitle>{pet.title}</PetTitle>
+                        <PetDesc>{pet.desc}</PetDesc>
+                    </PetText>
+                </PetTextContainer>
+            </PetInteractionTransformContainer>
+        </PetScrollerTransformContainer>
     );
 };
 
-const PetContainer = styled.div.attrs<{
+/** Handles the transform of the pet entry due to the list scroll position */
+const PetScrollerTransformContainer = styled.div.attrs<{
     $rotation: number,
     $translation: number,
     $animationLag: number,
@@ -92,9 +106,7 @@ const PetContainer = styled.div.attrs<{
 --animation-easing: cubic-bezier(.2,1.4,.4,1);
 
 display: grid;
-overflow: hidden;
 
-border-radius: 6rem 4rem / 5rem 3rem;
 cursor: pointer;
 
 user-select: none;
@@ -103,12 +115,11 @@ backface-visibility: hidden;
 transform:
         translateZ(var(--translation))
         rotateX(var(--rotation));
+transform-style: preserve-3d;
 
 z-index: 0;
 
-transition:
-        transform var(--animation-lag) var(--animation-easing),
-        z-index var(--animation-lag) steps(1, end);
+transition: z-index calc(var(--animation-lag) / 2) steps(1, end);
 animation: fade-in var(--animation-lag) ease-out;
 
 @keyframes fade-in {
@@ -122,41 +133,56 @@ animation: fade-in var(--animation-lag) ease-out;
 
 &:hover {
     z-index: 1;
+
+    .interaction-transform-container {
+        transform:
+                scale(1.03125)
+                rotateX(calc(-1 * var(--rotation)));
+
+        img {
+            transform: scale(1.125);
+            filter: brightness(1.25);
+        }
     
-    transform:
-            scale(1.03125)
-            translateZ(var(--translation));
-
-    > img {
-        transform: scale(1.125);
-        filter: brightness(1.25);
-    }
-
-    .pet-text {
-        gap: 0;
-        margin-bottom: 0;
-
-        transition:
-                gap 1s cubic-bezier(.4,1.25,.4,1),
-                margin-bottom .5s cubic-bezier(.2,1,.7,1);
+        .pet-text {
+            gap: 0;
+            margin-bottom: 0;
+    
+            transition:
+                    gap 1s cubic-bezier(.4,1.25,.4,1),
+                    margin-bottom .5s cubic-bezier(.2,1,.7,1);
+        }
     }
 
     transition:
             transform 1s cubic-bezier(.2,1.4,.4,1),
-            z-index 1s steps(1, start);
+            z-index 0.5s steps(1, start);
 }
 
 &:active {
-    transform:
-            scale(0.9)
-            translateZ(var(--translation));
-
-    > img {
-        transform: scale(1.25);
-        filter: brightness(0.8);
-    }
     z-index: 1;
+
+    .interaction-transform-container {
+        transform:
+                scale(0.9)
+                rotateX(calc(-1 * var(--rotation)));
+
+        img {
+            transform: scale(1.25);
+            filter: brightness(0.8);
+        }
+    }
 }
+`;
+
+/** Handles the transform of the pet entry due to user pointer hover/click */
+const PetInteractionTransformContainer = styled.div`
+display: grid;
+overflow: hidden;
+
+border-radius: 6rem 4rem / 5rem 3rem;
+
+transition: transform var(--animation-lag) var(--animation-easing);
 `;
 
 const PetImage = styled.img.attrs(({src}: {src: string}) => ({
