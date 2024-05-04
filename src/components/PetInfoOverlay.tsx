@@ -163,6 +163,7 @@ justify-content: center;
 text-align: left;
 
 @media screen and (max-width: 1280px) {
+    align-items: center;
     justify-content: start;
     
     text-align: center;
