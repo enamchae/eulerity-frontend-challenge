@@ -17,6 +17,26 @@ export const PetsListView = ({
 
     const petsList = useMemo(
         () => petsDataGetter.tryGet()
+                // naive searching
+                .filter(pet => {
+                    if (settings.searchQuery.length === 0) return true;
+
+                    const targetString = `${pet.title}${pet.desc}`.toUpperCase().replaceAll(/\s/g, "");
+                    const query = settings.searchQuery.toUpperCase().replaceAll(/\s/g, "");
+
+                    let queryCursor = 0;
+                    for (let targetStringCursor = 0; targetStringCursor < targetString.length; targetStringCursor++) {
+                        if (targetString[targetStringCursor] !== query[queryCursor]) continue;
+
+                        queryCursor++;
+                        if (queryCursor === query.length) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })
+
+                //sorting
                 .sort((a, b) => {
                     const aBeforeB = settings.sortKey === SortKey.CreationTime
                             ? a.createdTimestamp.getTime() < b.createdTimestamp.getTime()
@@ -28,7 +48,7 @@ export const PetsListView = ({
                         return settings.sortOrder === SortOrder.Ascending ? 1 : -1;
                     }
                 }),
-        [petsDataGetter, settings.sortKey, settings.sortOrder]
+        [petsDataGetter, settings.sortKey, settings.sortOrder, settings.searchQuery]
     );
 
     return (

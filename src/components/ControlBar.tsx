@@ -2,9 +2,9 @@ import styled from "styled-components";
 import { useAtom } from "jotai";
 import { Dropdown } from "./Dropdown";
 import { Button } from "./Button";
-import { TextEntry } from "./TextEntry";
 import { selectedPetsAtom, settingsAtom } from "@/store";
 import { ClickAction, SortKey, SortOrder } from "$/Settings";
+import { baseInputCss } from "@/styles";
 
 export const ControlBar = ({
     onSortChange,
@@ -91,8 +91,11 @@ export const ControlBar = ({
             <ControlBarRow>
                 <SearchBar
                     value={settings.searchQuery}
-                    onInput={() => {
-                        
+                    onInput={event => {
+                        setSettings({
+                            ...settings,
+                            searchQuery: event.currentTarget.value,
+                        });
                     }}
                     placeholder="Search"
                 />
@@ -127,7 +130,7 @@ gap: 0.5rem 6rem;
 align-items: center;
 position: relative;
 overflow-x: auto;
-padding: 1rem 2rem;
+padding: 1.5rem 2rem;
 
 + div::before {
     content: " ";
@@ -149,6 +152,7 @@ align-items: center;
 gap: 1ch;
 `;
 
-const SearchBar = styled(TextEntry)`
-width: 100%;
+const SearchBar = styled.input`
+${baseInputCss}
+width: 60ch;
 `;
