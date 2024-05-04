@@ -4,6 +4,7 @@ import { useFetchPetsData } from "./hooks/useFetchPetsData";
 import { PetsListView } from './components/PetsListView';
 import styled from 'styled-components';
 import { ControlBar } from './components/ControlBar';
+import { Loading } from './components/Loading';
 
 const quartInOut = (t: number) => {
     if (t <= 0) {
@@ -44,21 +45,22 @@ export const App = () => {
 
     return (
         <AppContainer>
-            <TitleBar>
-                <ListTitle $movementProgress={titleMovementProgress}>
+            <TitleBar $movementProgress={titleMovementProgress}>
+                <ListTitle>
                     <Title>These are my pets!</Title>
                     <Subtitle>(no they are not “wild animals” you cannot take them away from me)</Subtitle>
                 </ListTitle>
             </TitleBar>
 
             <PetsListScroller ref={listScrollerRef}>
-                <Suspense fallback={<>loading</>}>
+                <Suspense fallback={<Loading />}>
                     <PetsListView
                         petsDataGetter={petsDataGetter}
                         listScrollerRef={listScrollerRef}
                     />
                 </Suspense>
 
+                {/* To ensure that the empty 1st and 3rd grid rows can be scrolled into (functioning as padding) */}
                 <GridSpacerHigh />
                 <GridSpacerLow />
             </PetsListScroller>
@@ -74,10 +76,10 @@ const AppContainer = styled.div`
 margin: 0 auto;
 height: 100%;
 display: grid;
-grid-template-rows: 1fr 75vh 1fr;
+grid-template-rows: 25vh 1fr 6rem;
 text-align: center;
 
-background: linear-gradient(90deg, #aaa, #bbb);
+background: linear-gradient(90deg, #77c194, #74bfec, #b07ce3);
 
 > * {
     padding-left: var(--side-padding);
@@ -85,31 +87,37 @@ background: linear-gradient(90deg, #aaa, #bbb);
 }
 `;
 
-const TitleBar = styled.div`
-grid-area: 1/1;
-
-position: relative;
-
-z-index: 1;
-`;
-
-const ListTitle = styled.div.attrs<{ $movementProgress: number }>(props => ({
+const TitleBar = styled.div.attrs<{ $movementProgress: number }>(props => ({
     style: {
         "--movement-progress": props.$movementProgress,
     }
 }))`
 --movement-progress: 0;
 
+grid-area: 1/1;
+position: relative;
+
+background: radial-gradient(ellipse at 50% 25%, rgba(24, 58, 47, calc(var(--movement-progress) * 0.75)), #0000 50%);
+
+z-index: 1;
+`;
+
+const ListTitle = styled.div`
 position: absolute;
 width: calc(100% - 2 * var(--side-padding));
 top: calc(2rem * var(--movement-progress) + 25vh * (1 - var(--movement-progress)));
+display: flex;
+flex-direction: column;
+gap: 1rem;
+pointer-events: none;
+
 transform:
         scale(calc(1 - var(--movement-progress) * .4))
         translateY(calc(-50% * (1 - var(--movement-progress))));
 transform-origin: top;
-display: flex;
-flex-direction: column;
-gap: 1rem;
+
+text-shadow: 0 0 #fff;
+color: rgba(24, 58, 47, calc(round(1.2 - var(--movement-progress))));
 `;
 
 const Title = styled.h1`
@@ -118,7 +126,7 @@ margin: 0;
 `;
 
 const Subtitle = styled.div`
-font-size: 1.15rem;
+font-size: calc(1.5rem * var(--movement-progress) + 1.15rem * (1 - var(--movement-progress)));
 `;
 
 const PetsListScroller = styled.div`
@@ -132,9 +140,8 @@ display: grid;
 grid-auto-rows: 50vh 1fr 50vh;
 min-height: 100%;
 
-mask: linear-gradient(#0000, #000 30vh);
-background: linear-gradient(#fff 70vh, #fff0);
-
+mask: linear-gradient(#0000, #000 30vh, #000 70vh, #0000);
+background: #fff;
 `;
 
 const GridSpacerHigh = styled.div`

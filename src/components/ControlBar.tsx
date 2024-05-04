@@ -19,6 +19,7 @@ grid-area: 3/1;
 
 display: flex;
 justify-content: space-between;
+align-items: center;
 margin: 0 var(--side-padding) var(--side-padding) var(--side-padding);
 
 background: #ffffffaf;

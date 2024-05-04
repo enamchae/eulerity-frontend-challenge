@@ -14,8 +14,15 @@ export const PetView = ({
 }) => {
     const [rotation, setRotation] = useState(0);
     const [translation, setTranslation] = useState(0);
+    const [animationLag, setAnimationLag] = useState(0);
+    const [animationOvershoot, setAnimationOvershoot] = useState(0)
 
     const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        setAnimationLag(Math.random() + 0.5);
+        setAnimationOvershoot(Math.random() * 0.8 + 1.2);
+    }, []);
 
     useEffect(() => {
         const updateMovementProgress = () => {
@@ -52,6 +59,7 @@ export const PetView = ({
             ref={containerRef}
             $rotation={rotation}
             $translation={translation}
+            $animationLag={animationLag}
         >
             <PetImage src={pet.imageUrl} />
 
@@ -68,14 +76,20 @@ export const PetView = ({
 const PetContainer = styled.div.attrs<{
     $rotation: number,
     $translation: number,
+    $animationLag: number,
+    $animationOvershoot: number,
 }>(props => ({
     style: {
         "--rotation": `${props.$rotation}rad`,
         "--translation": `${props.$translation * innerHeight}px`,
+        "--animation-lag": `${props.$animationLag}s`,
+        "--animation-easing": `cubic-bezier(.2,${props.$animationLag},.4,1)`,
     },
 }))`
 --rotation: 0rad;
 --translation: 0;
+--animation-lag: 1s;
+--animation-easing: cubic-bezier(.2,1.4,.4,1);
 
 display: grid;
 overflow: hidden;
@@ -93,10 +107,22 @@ transform:
 z-index: 0;
 
 transition:
-        transform 1s cubic-bezier(.2,1.4,.4,1),
-        z-index 1s steps(1, start);
+        transform var(--animation-lag) var(--animation-easing),
+        z-index var(--animation-lag) steps(1, end);
+animation: fade-in var(--animation-lag) ease-out;
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 
 &:hover {
+    z-index: 1;
+    
     transform:
             scale(1.03125)
             translateZ(var(--translation));
@@ -114,11 +140,10 @@ transition:
                 gap 1s cubic-bezier(.4,1.25,.4,1),
                 margin-bottom .5s cubic-bezier(.2,1,.7,1);
     }
-    z-index: 1;
 
     transition:
             transform 1s cubic-bezier(.2,1.4,.4,1),
-            z-index 1s steps(1, end);
+            z-index 1s steps(1, start);
 }
 
 &:active {
