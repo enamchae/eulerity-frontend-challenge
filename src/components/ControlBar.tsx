@@ -10,6 +10,7 @@ import { useFetchPetsData } from "@/hooks/useFetchPetsData";
 import { Pet } from "@/lib/Pet";
 import { useRef } from "react";
 import { ButtonX } from "./ButtonX";
+import { downloadFile } from "@/lib/util";
 
 export const ControlBar = ({
     onSortChange,
@@ -102,16 +103,7 @@ export const ControlBar = ({
     
                                     URL.revokeObjectURL(url);
                                 } else {
-                                    const pet = selectedPetsArray[0];
-                                    const blob = await (await fetch(pet.imageUrl)).blob();
-                                    const url = URL.createObjectURL(blob);
-    
-                                    const anchor = document.createElement("a");
-                                    anchor.href = url;
-                                    anchor.download = `${pet.title}.jpg`;
-                                    anchor.click();
-    
-                                    URL.revokeObjectURL(url);
+                                    selectedPetsArray[0].downloadImage();
                                 }
                             }}
                         >

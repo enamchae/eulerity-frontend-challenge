@@ -5,17 +5,23 @@ import { useAtom } from "jotai";
 import styled, { css } from "styled-components";
 import { ButtonX } from "./ButtonX";
 import { useCallback } from "react";
+import { Button } from "./Button";
+import { downloadFile } from "@/lib/util";
 
 export const PetInfoOverlay = ({
     pet,
+    onClose=() => {},
 }: {
     pet: Pet,
+    onClose?: () => void,
 }) => {
     const [viewingPetInfo, setViewingPetInfo] = useAtom(viewingPetInfoAtom);
 
     const closeDialog = useCallback(() => {
         setViewingPetInfo(null);
         history.pushState({}, "", "/");
+
+        onClose();
     }, [setViewingPetInfo]);
 
     return (
@@ -44,6 +50,14 @@ export const PetInfoOverlay = ({
                             second: "numeric",
                         })}
                     </PetDesc>
+
+                    <Button
+                        onClick={() => pet.downloadImage()}
+                        style={downloadButtonCss}
+                    >
+                        Download image
+                    </Button>
+
                     <PetLink
                         href={pet.url}
                         target="_blank"
@@ -144,6 +158,7 @@ transition: filter .25s ease-in-out;
 const PetDetails = styled.div`
 display: flex;
 flex-direction: column;
+align-items: start;
 justify-content: center;
 
 text-align: left;
@@ -165,8 +180,6 @@ font-size: 2rem;
 `;
 
 const PetLink = styled.a`
-margin-top: 2rem;
-
 font-size: 1.5rem;
 text-decoration: underline;
 color: currentcolor;
@@ -178,6 +191,11 @@ color: currentcolor;
 &:active {
     filter: brightness(0.5);
 }
+`;
+
+const downloadButtonCss = css`
+font-size: 1.5rem;
+margin: 2rem 0;
 `;
 
 const closeButtonCss = css`

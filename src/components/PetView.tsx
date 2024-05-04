@@ -7,9 +7,6 @@ import { selectedPetsAtom, settingsAtom, viewingPetInfoAtom } from "@/store";
 import { ClickAction } from "@/lib/Settings";
 import { useNavigate } from "react-router-dom";
 
-/** Proportion of the scroller that it takes for an entry to appear from the bottom and disappear at the top */
-const SCROLLER_PROPORTION = 0.65;
-
 export const PetView = ({
     pet,
     listScrollerRef,
@@ -44,11 +41,8 @@ export const PetView = ({
 
             - (listScrollerRef.current?.scrollTop ?? 0)
 
-            // centering
-            - (listScrollerRef.current?.offsetHeight ?? 0) * (1 - SCROLLER_PROPORTION) / 2
-
-            + (listScrollerRef.current?.offsetHeight ?? 0) * 0.45
-        ) / ((listScrollerRef.current?.offsetHeight ?? 1) * SCROLLER_PROPORTION);
+            + innerHeight * 0.45
+        ) / (listScrollerRef.current?.offsetHeight ?? 1);
 
         const yProportionClamped = Math.tanh(yProportion * 2 - 1);
 

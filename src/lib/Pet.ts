@@ -1,3 +1,5 @@
+import { downloadFile } from "./util";
+
 export type PetJson = {
     id: string,
     imageUrl: string,
@@ -21,13 +23,21 @@ export class Pet {
     ) {}
 
     static listJson(pets: PetsListJson) {
-        return pets.map(pet => new Pet(
+        return pets.map(Pet.json);
+    }
+
+    static json(pet: PetJson) {
+        return new Pet(
             pet.id,
             pet.imageUrl,
             pet.title,
             pet.desc,
             pet.url,
             new Date(pet.createdTimestamp),
-        ));
+        );
+    }
+
+    downloadImage() {
+        downloadFile(this.imageUrl, `${this.title}.jpg`);
     }
 }
