@@ -1,4 +1,4 @@
-import { Suspense, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import "@/App.css";
 import { useFetchPetsData } from "@/hooks/useFetchPetsData";
 import { PetsListView } from "@/components/PetsListView";
@@ -32,6 +32,21 @@ export const PetsPage = () => {
                         listScrollerRef={listScrollerRef}
                         sortKey={sortKey}
                         sortOrder={sortOrder}
+                        onClickPet={pet => {
+                            switch (clickAction) {
+                                case ClickAction.Select:
+                                    if (selectedPets.has(pet)) {
+                                        setSelectedPets(new Set([...selectedPets].filter(newPet => newPet !== pet)));
+                                    } else {
+                                        setSelectedPets(new Set([...selectedPets, pet]));
+                                    }
+                                    break;
+
+                                case ClickAction.ViewDetails:
+                                    break;
+                            }
+                        }}
+                        selectedPets={selectedPets}
                     />
                 </Suspense>
 

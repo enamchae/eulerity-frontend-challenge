@@ -3,17 +3,22 @@ import { PetView } from "./PetView";
 import styled from "styled-components";
 import { RefObject, useMemo } from "react";
 import { SortKey, SortOrder } from "./ControlBar";
+import { Pet } from "@/lib/Pet";
 
 export const PetsListView = ({
     petsDataGetter,
     listScrollerRef,
     sortKey,
     sortOrder,
+    selectedPets,
+    onClickPet,
 }: {
     petsDataGetter: PetsDataGetter,
     listScrollerRef: RefObject<HTMLDivElement>,
     sortKey: SortKey,
     sortOrder: SortOrder,
+    selectedPets: Set<Pet>,
+    onClickPet: (pet: Pet) => void,
 }) => {
     const petsList = useMemo(
         () => petsDataGetter.tryGet()
@@ -40,6 +45,8 @@ export const PetsListView = ({
                     listScrollerRef={listScrollerRef}
                     sortKey={sortKey}
                     sortOrder={sortOrder}
+                    selectedPets={selectedPets}
+                    onClick={onClickPet}
                 />
             ))}
         </ListContainer>

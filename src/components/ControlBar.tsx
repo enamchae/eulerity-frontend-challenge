@@ -81,11 +81,26 @@ export const ControlBar = ({
                 />
             </ControlBarSegment>
 
-            <ControlBarSegment>
-                {selectedPets.size} pets are selected.
-                <Button>Download selected</Button>
-                <Button>Clear selection</Button>
-            </ControlBarSegment>
+            {
+                clickAction === ClickAction.Select &&
+                <ControlBarSegment>
+                    {selectedPets.size} pet{selectedPets.size === 1 ? " is" : "s are"} selected.
+                    <Button
+                        onClick={() => {
+                            
+                        }}
+                    >
+                        Download selected
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            setSelectedPets(new Set());
+                        }}
+                    >
+                        Clear selection
+                    </Button>
+                </ControlBarSegment>
+            }
         </ControlBarContainer>
     );
 };

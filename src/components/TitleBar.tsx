@@ -60,6 +60,8 @@ position: relative;
 
 background: radial-gradient(ellipse at 50% 25%, rgba(22, 58, 70, calc(var(--movement-progress) * 0.75)), #0000 50%);
 
+pointer-events: none;
+
 z-index: 1;
 `;
 
@@ -70,7 +72,6 @@ top: calc(2rem * var(--movement-progress) + 25vh * (1 - var(--movement-progress)
 display: flex;
 flex-direction: column;
 gap: 1rem;
-pointer-events: none;
 
 transform:
         scale(calc(1 - var(--movement-progress) * .4))
@@ -78,7 +79,7 @@ transform:
 transform-origin: top;
 
 text-shadow: 0 0 #fff;
-color: rgba(24, 58, 47, calc(round(1.2 - var(--movement-progress))));
+color: rgba(24, 58, 47, calc(round(1.1 - var(--movement-progress))));
 `;
 
 const Title = styled.h1`

@@ -1,6 +1,6 @@
 import { Pet } from "$/Pet";
 import { RefObject, useCallback, useEffect, useRef, useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { SortKey, SortOrder } from "./ControlBar";
 
 /** Proportion of the scroller that it takes for an entry to appear from the bottom and disappear at the top */
@@ -11,11 +11,15 @@ export const PetView = ({
     listScrollerRef,
     sortKey,
     sortOrder,
+    selectedPets,
+    onClick,
 }: {
     pet: Pet,
     listScrollerRef: RefObject<HTMLDivElement>,
     sortKey: SortKey,
     sortOrder: SortOrder,
+    selectedPets: Set<Pet>,
+    onClick: (pet: Pet) => void,
 }) => {
     const [rotation, setRotation] = useState(0);
     const [translation, setTranslation] = useState(0);
@@ -29,7 +33,6 @@ export const PetView = ({
         setAnimationOvershoot(Math.random() + 1.2);
     }, []);
 
-    
     
     const updateMovementProgress = useCallback(() => {
         const yProportion = (
@@ -71,8 +74,12 @@ export const PetView = ({
             $translation={translation}
             $animationLag={animationLag}
             $animationOvershoot={animationOvershoot}
+            onClick={() => onClick(pet)}
         >
-            <PetInteractionTransformContainer className="interaction-transform-container">
+            <PetInteractionTransformContainer
+                className="interaction-transform-container"
+                $selected={selectedPets.has(pet)}
+            >
                 <PetImage src={pet.imageUrl} />
 
                 <PetTextContainer>
@@ -85,6 +92,15 @@ export const PetView = ({
         </PetScrollerTransformContainer>
     );
 };
+
+const fadeIn = keyframes`
+0% {
+    opacity: 0;
+}
+100% {
+    opacity: 1;
+}
+`;
 
 /** Handles the transform of the pet entry due to the list scroll position */
 const PetScrollerTransformContainer = styled.div.attrs<{
@@ -120,16 +136,7 @@ transform-style: preserve-3d;
 z-index: 0;
 
 transition: z-index calc(var(--animation-lag) / 2) steps(1, end);
-animation: fade-in var(--animation-lag) ease-out;
-
-@keyframes fade-in {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
-}
+animation: ${fadeIn} var(--animation-lag) ease-out;
 
 &:hover {
     z-index: 1;
@@ -175,19 +182,45 @@ animation: fade-in var(--animation-lag) ease-out;
 }
 `;
 
+const selectedPulsate = keyframes`
+0% {
+    outline-color: #2f6f45;
+}
+
+50% {
+    outline-color: #559bd9;
+}
+
+100% {
+    outline-color: #c64a79;
+}
+`;
+
 /** Handles the transform of the pet entry due to user pointer hover/click */
-const PetInteractionTransformContainer = styled.div`
+const PetInteractionTransformContainer = styled.div.attrs<{
+    $selected: boolean,
+}>(props => props)`
 display: grid;
 overflow: hidden;
+border: ${props => props.$selected ? "2.5rem" : "0"} solid #0000;
+
+outline-offset: -1.5rem;
+outline: ${props => props.$selected ? "0.5rem" : "0"} solid;
 
 border-radius: 6rem 4rem / 5rem 3rem;
 
-transition: transform var(--animation-lag) var(--animation-easing);
+transform: var(--selected-translation);
+filter: brightness(${props => props.$selected ? "1.25": "1"});
+
+transition:
+        transform var(--animation-lag) var(--animation-easing),
+        border .5s var(--animation-easing),
+        outline .5s var(--animation-easing);
+animation: ${selectedPulsate} 1s infinite alternate ease-in-out;
+animation-play-state: ${props => props.$selected ? "running" : "paused"};
 `;
 
-const PetImage = styled.img.attrs(({src}: {src: string}) => ({
-    src,
-}))`
+const PetImage = styled.img`
 grid-area: 1/1;
 
 align-self: stretch;
