@@ -1,4 +1,4 @@
-import { baseClickableCss } from "@/styles";
+import { baseClickableCss, buttonClickEffectCss } from "@/styles";
 import styled from "styled-components";
 
 export const Button = ({
@@ -12,7 +12,7 @@ export const Button = ({
 }) => {
     return (
         <ButtonContainer
-            onClick={() => onClick()}
+            onClick={() => !disabled && onClick()}
             $disabled={disabled}
         >
             {children}
@@ -24,13 +24,8 @@ const ButtonContainer = styled.button.attrs<{
     $disabled: boolean
 }>(props => props)`
 ${baseClickableCss}
+${buttonClickEffectCss}
 
 pointer-events: ${props => props.$disabled ? "none" : "auto"};
 opacity: ${props => props.$disabled ? "0.3" : "1"};
-
-&:active {
-    background: var(--col-fg);
-    border-color: var(--col-fg);
-    color: #fff;
-}
 `;

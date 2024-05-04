@@ -4,9 +4,10 @@ import { Dropdown } from "./Dropdown";
 import { Button } from "./Button";
 import { selectedPetsAtom, settingsAtom, visiblePetsAtom } from "@/store";
 import { ClickAction, SortKey, SortOrder } from "$/Settings";
-import { baseInputCss } from "@/styles";
+import { baseInputBorderCss, buttonClickEffectCss, buttonHoverEffectCss, inputBorderRadiusCss, resetInputCss } from "@/styles";
 import { useFetchPetsData } from "@/hooks/useFetchPetsData";
 import { Pet } from "@/lib/Pet";
+import { useRef } from "react";
 
 export const ControlBar = ({
     onSortChange,
@@ -18,6 +19,8 @@ export const ControlBar = ({
     const [settings, setSettings] = useAtom(settingsAtom);
     const [selectedPets, setSelectedPets] = useAtom(selectedPetsAtom);
     const [visiblePets, setVisiblePets] = useAtom(visiblePetsAtom);
+
+    const searchBarInputRef = useRef<HTMLInputElement>(null);
 
     return (
         <ControlBarContainer>
@@ -120,16 +123,32 @@ export const ControlBar = ({
             </ControlBarRow>
 
             <ControlBarRow>
-                <SearchBar
-                    value={settings.searchQuery}
-                    onInput={event => {
-                        setSettings({
-                            ...settings,
-                            searchQuery: event.currentTarget.value,
-                        });
-                    }}
-                    placeholder="Search"
-                />
+                <SearchBar htmlFor="search-bar">
+                    <SearchBarInput
+                        value={settings.searchQuery}
+                        id="search-bar"
+                        onInput={event => {
+                            setSettings({
+                                ...settings,
+                                searchQuery: event.currentTarget.value,
+                            });
+                        }}
+                        placeholder="Search"
+                        ref={searchBarInputRef}
+                    />
+
+                    <SearchBarClearButton
+                        onClick={() => {
+                            setSettings({
+                                ...settings,
+                                searchQuery: "",
+                            });
+                            searchBarInputRef.current?.focus();
+                        }}
+                    >
+                        ✕
+                    </SearchBarClearButton>
+                </SearchBar>
             </ControlBarRow>
         </ControlBarContainer>
     );
@@ -183,7 +202,30 @@ align-items: center;
 gap: 1ch;
 `;
 
-const SearchBar = styled.input`
-${baseInputCss}
+const SearchBar = styled.label`
+${baseInputBorderCss}
 width: 60ch;
+display: flex;
+align-items: stretch;
+
+cursor: text;
+`;
+
+const SearchBarInput = styled.input`
+${resetInputCss}
+flex-grow: 1;
+outline-offset: 0.5rem;
+
+${inputBorderRadiusCss}
+`;
+
+const SearchBarClearButton = styled.button`
+${resetInputCss}
+${buttonHoverEffectCss}
+${buttonClickEffectCss}
+
+cursor: pointer;
+
+padding: 0.5rem;
+line-height: 1;
 `;
