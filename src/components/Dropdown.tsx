@@ -35,7 +35,7 @@ export const Dropdown = <T,>({
                 }
             }}
         >
-            {[...options].map(([value, label], i) => (
+            {[...options.values()].map(label => (
                 <option key={label}>
                     {label}
                 </option>

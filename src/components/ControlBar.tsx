@@ -5,12 +5,11 @@ import { Dropdown } from "./Dropdown";
 import { Button } from "./Button";
 import { selectedPetsAtom, settingsAtom, visiblePetsAtom } from "@/store";
 import { ClickAction, SortKey, SortOrder } from "$/Settings";
-import { baseInputBorderCss, buttonClickEffectCss, buttonHoverEffectCss, resetInputCss } from "@/styles";
+import { baseInputBorderCss, resetInputCss } from "@/styles";
 import { useFetchPetsData } from "@/hooks/useFetchPetsData";
 import { Pet } from "@/lib/Pet";
 import { useRef } from "react";
 import { ButtonX } from "./ButtonX";
-import { downloadFile } from "@/lib/util";
 
 export const ControlBar = ({
     onSortChange,

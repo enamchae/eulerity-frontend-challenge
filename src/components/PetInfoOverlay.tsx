@@ -6,7 +6,6 @@ import styled, { css } from "styled-components";
 import { ButtonX } from "./ButtonX";
 import { useCallback } from "react";
 import { Button } from "./Button";
-import { downloadFile } from "@/lib/util";
 
 export const PetInfoOverlay = ({
     pet,

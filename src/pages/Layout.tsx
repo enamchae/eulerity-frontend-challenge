@@ -1,9 +1,8 @@
 import "@/App.css";
-import { ReactNode } from "react";
-import { Outlet, RouteProps } from "react-router-dom";
-import styled, { RuleSet, css } from "styled-components";
+import { Outlet } from "react-router-dom";
+import styled from "styled-components";
 
-export const Layout = (props: RouteProps) => {
+export const Layout = () => {
     return (
         <AppContainer>
             <Outlet />

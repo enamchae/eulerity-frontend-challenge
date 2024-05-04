@@ -5,7 +5,6 @@ import styled, { keyframes } from "styled-components";
 import { fadeIn } from "@/styles";
 import { selectedPetsAtom, settingsAtom, viewingPetInfoAtom } from "@/store";
 import { ClickAction } from "@/lib/Settings";
-import { useNavigate } from "react-router-dom";
 
 export const PetView = ({
     pet,
@@ -24,8 +23,6 @@ export const PetView = ({
     const [animationOvershoot, setAnimationOvershoot] = useState(0)
 
     const containerRef = useRef<HTMLDivElement>(null);
-
-    const navigate = useNavigate();
 
     useEffect(() => {
         setAnimationLag(Math.random() + 0.5);
