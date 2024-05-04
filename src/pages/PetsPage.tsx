@@ -1,23 +1,16 @@
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useRef } from "react";
 import "@/App.css";
 import { useFetchPetsData } from "@/hooks/useFetchPetsData";
 import { PetsListView } from "@/components/PetsListView";
 import styled from "styled-components";
-import { ClickAction, ControlBar, SortKey, SortOrder } from "@/components/ControlBar";
+import { ControlBar } from "@/components/ControlBar";
 import { Loading } from "@/components/Loading";
 import { TitleBar } from "@/components/TitleBar";
-import { Pet } from "$/Pet";
 
 export const PetsPage = () => {
     const petsDataGetter = useFetchPetsData();
     
     const listScrollerRef = useRef<HTMLDivElement>(null);
-
-    const [selectedPets, setSelectedPets] = useState(new Set<Pet>());
-
-    const [sortKey, setSortKey] = useState(SortKey.CreationTime);
-    const [sortOrder, setSortOrder] = useState(SortOrder.Ascending);
-    const [clickAction, setClickAction] = useState(ClickAction.ViewDetails);
 
     return (
         <AppContainer>
@@ -30,23 +23,6 @@ export const PetsPage = () => {
                     <PetsListView
                         petsDataGetter={petsDataGetter}
                         listScrollerRef={listScrollerRef}
-                        sortKey={sortKey}
-                        sortOrder={sortOrder}
-                        onClickPet={pet => {
-                            switch (clickAction) {
-                                case ClickAction.Select:
-                                    if (selectedPets.has(pet)) {
-                                        setSelectedPets(new Set([...selectedPets].filter(newPet => newPet !== pet)));
-                                    } else {
-                                        setSelectedPets(new Set([...selectedPets, pet]));
-                                    }
-                                    break;
-
-                                case ClickAction.ViewDetails:
-                                    break;
-                            }
-                        }}
-                        selectedPets={selectedPets}
                     />
                 </Suspense>
 
@@ -56,14 +32,6 @@ export const PetsPage = () => {
             </PetsListScroller>
 
             <ControlBar
-                sortKey={sortKey}
-                setSortKey={setSortKey}
-                sortOrder={sortOrder}
-                setSortOrder={setSortOrder}
-                clickAction={clickAction}
-                setClickAction={setClickAction}
-                selectedPets={selectedPets}
-                setSelectedPets={setSelectedPets}
                 onSortChange={() => {
                     // preserve scroll position
                     const scrollPosition = listScrollerRef.current?.scrollTop ?? 0;

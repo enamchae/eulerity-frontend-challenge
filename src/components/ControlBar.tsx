@@ -1,53 +1,31 @@
 import styled from "styled-components";
+import { useAtom } from "jotai";
 import { Dropdown } from "./Dropdown";
-import { Pet } from "$/Pet";
 import { Button } from "./Button";
-
-export enum SortKey {
-    CreationTime,
-    Name,
-}
-
-export enum SortOrder {
-    Ascending,
-    Descending,
-}
-
-export enum ClickAction {
-    ViewDetails,
-    Select,
-}
+import { TextEntry } from "./TextEntry";
+import { selectedPetsAtom, settingsAtom } from "@/store";
+import { ClickAction, SortKey, SortOrder } from "$/Settings";
 
 export const ControlBar = ({
-    sortKey,
-    setSortKey,
-    sortOrder,
-    setSortOrder,
-    clickAction,
-    setClickAction,
-    selectedPets,
-    setSelectedPets,
     onSortChange,
 }: {
-    sortKey: SortKey,
-    setSortKey: (sortKey: SortKey) => void,
-    sortOrder: SortOrder,
-    setSortOrder: (sortOrder: SortOrder) => void,
-    clickAction: ClickAction,
-    setClickAction: (clickAction: ClickAction) => void,
-    selectedPets: Set<Pet>,
-    setSelectedPets: (selectedPets: Set<Pet>) => void,
     onSortChange: () => void,
 }) => {
+    const [settings, setSettings] = useAtom(settingsAtom);
+    const [selectedPets, setSelectedPets] = useAtom(selectedPetsAtom);
+
     return (
         <ControlBarContainer>
             <ControlBarRow>
                 <ControlBarSegment>
                     Sorted by
                     <Dropdown
-                        value={sortKey}
-                        onChange={value => {
-                            setSortKey(value);
+                        value={settings.sortKey}
+                        onChange={sortKey => {
+                            setSettings({
+                                ...settings,
+                                sortKey,
+                            });
                             onSortChange();
                         }}
                         options={new Map([
@@ -57,9 +35,12 @@ export const ControlBar = ({
                     />
                     in
                     <Dropdown
-                        value={sortOrder}
-                        onChange={value => {
-                            setSortOrder(value);
+                        value={settings.sortOrder}
+                        onChange={sortOrder => {
+                            setSettings({
+                                ...settings,
+                                sortOrder,
+                            });
                             onSortChange();
                         }}
                         options={new Map([
@@ -73,8 +54,11 @@ export const ControlBar = ({
                 <ControlBarSegment>
                     Click a pet to
                     <Dropdown
-                        value={clickAction}
-                        onChange={setClickAction}
+                        value={settings.clickAction}
+                        onChange={clickAction => setSettings({
+                            ...settings,
+                            clickAction,
+                        })}
                         options={new Map([
                             [ClickAction.ViewDetails, "view details"],
                             [ClickAction.Select, "select it"],
@@ -83,7 +67,7 @@ export const ControlBar = ({
                 </ControlBarSegment>
 
                 {
-                    clickAction === ClickAction.Select &&
+                    settings.clickAction === ClickAction.Select &&
                     <ControlBarSegment>
                         {selectedPets.size} pet{selectedPets.size === 1 ? " is" : "s are"} selected.
                         <Button
@@ -105,7 +89,13 @@ export const ControlBar = ({
             </ControlBarRow>
 
             <ControlBarRow>
-                Search
+                <SearchBar
+                    value={settings.searchQuery}
+                    onInput={() => {
+                        
+                    }}
+                    placeholder="Search"
+                />
             </ControlBarRow>
         </ControlBarContainer>
     );
@@ -157,4 +147,8 @@ const ControlBarSegment = styled.div`
 display: flex;
 align-items: center;
 gap: 1ch;
+`;
+
+const SearchBar = styled(TextEntry)`
+width: 100%;
 `;

@@ -11,9 +11,13 @@ export const TextEntry = ({
     placeholder: string,
 }) => {
     return (
-        <TextEntryContainer>
-
-        </TextEntryContainer>
+        <TextEntryContainer
+            value={value}
+            placeholder={placeholder}
+            onInput={event => {
+                onInput(event.currentTarget.value);
+            }}
+        />
     );
 };
 

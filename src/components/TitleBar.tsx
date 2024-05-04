@@ -42,7 +42,7 @@ export const TitleBar = ({
         <TitleBarContainer $movementProgress={titleMovementProgress}>
             <ListTitle>
                 <Title>These are my pets!</Title>
-                <Subtitle>(no they are not “wild animals” you cannot take them away from me)</Subtitle>
+                <Subtitle>(no they are not “wild animals” you cannot take them away from me :( )</Subtitle>
             </ListTitle>
         </TitleBarContainer>
     );

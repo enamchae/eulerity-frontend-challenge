@@ -1,8 +1,10 @@
 import { Pet } from "$/Pet";
 import { RefObject, useCallback, useEffect, useRef, useState } from "react";
+import { useAtom } from "jotai";
 import styled, { keyframes } from "styled-components";
-import { SortKey, SortOrder } from "./ControlBar";
 import { fadeIn } from "@/styles";
+import { selectedPetsAtom, settingsAtom } from "@/store";
+import { ClickAction } from "@/lib/Settings";
 
 /** Proportion of the scroller that it takes for an entry to appear from the bottom and disappear at the top */
 const SCROLLER_PROPORTION = 0.65;
@@ -10,18 +12,13 @@ const SCROLLER_PROPORTION = 0.65;
 export const PetView = ({
     pet,
     listScrollerRef,
-    sortKey,
-    sortOrder,
-    selectedPets,
-    onClick,
 }: {
     pet: Pet,
     listScrollerRef: RefObject<HTMLDivElement>,
-    sortKey: SortKey,
-    sortOrder: SortOrder,
-    selectedPets: Set<Pet>,
-    onClick: (pet: Pet) => void,
 }) => {
+    const [settings, setSettings] = useAtom(settingsAtom);
+    const [selectedPets, setSelectedPets] = useAtom(selectedPetsAtom);
+
     const [rotation, setRotation] = useState(0);
     const [translation, setTranslation] = useState(0);
     const [animationLag, setAnimationLag] = useState(0);
@@ -66,7 +63,7 @@ export const PetView = ({
         };
     }, [updateMovementProgress, listScrollerRef]);
 
-    useEffect(updateMovementProgress, [updateMovementProgress, sortKey, sortOrder]);
+    useEffect(updateMovementProgress, [updateMovementProgress, settings.sortKey, settings.sortOrder]);
 
     return (
         <PetScrollerTransformContainer
@@ -75,7 +72,20 @@ export const PetView = ({
             $translation={translation}
             $animationLag={animationLag}
             $animationOvershoot={animationOvershoot}
-            onClick={() => onClick(pet)}
+            onClick={() => {
+                switch (settings.clickAction) {
+                    case ClickAction.Select:
+                        if (selectedPets.has(pet)) {
+                            setSelectedPets(new Set([...selectedPets].filter(newPet => newPet !== pet)));
+                        } else {
+                            setSelectedPets(new Set([...selectedPets, pet]));
+                        }
+                        break;
+
+                    case ClickAction.ViewDetails:
+                        break;
+                }
+            }}
         >
             <PetInteractionTransformContainer
                 className="interaction-transform-container"

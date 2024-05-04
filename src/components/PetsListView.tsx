@@ -1,39 +1,34 @@
 import { PetsDataGetter } from "@/hooks/useFetchPetsData";
 import { PetView } from "./PetView";
 import styled from "styled-components";
+import { useAtom } from "jotai";
 import { RefObject, useMemo } from "react";
-import { SortKey, SortOrder } from "./ControlBar";
-import { Pet } from "@/lib/Pet";
+import { SortKey, SortOrder } from "$/Settings";
+import { settingsAtom } from "@/store";
 
 export const PetsListView = ({
     petsDataGetter,
     listScrollerRef,
-    sortKey,
-    sortOrder,
-    selectedPets,
-    onClickPet,
 }: {
     petsDataGetter: PetsDataGetter,
     listScrollerRef: RefObject<HTMLDivElement>,
-    sortKey: SortKey,
-    sortOrder: SortOrder,
-    selectedPets: Set<Pet>,
-    onClickPet: (pet: Pet) => void,
 }) => {
+    const [settings, setSettings] = useAtom(settingsAtom);
+
     const petsList = useMemo(
         () => petsDataGetter.tryGet()
                 .sort((a, b) => {
-                    const aBeforeB = sortKey === SortKey.CreationTime
+                    const aBeforeB = settings.sortKey === SortKey.CreationTime
                             ? a.createdTimestamp.getTime() < b.createdTimestamp.getTime()
                             : a.title < b.title;
 
                     if (aBeforeB) {
-                        return sortOrder === SortOrder.Ascending ? -1 : 1;
+                        return settings.sortOrder === SortOrder.Ascending ? -1 : 1;
                     } else {
-                        return sortOrder === SortOrder.Ascending ? 1 : -1;
+                        return settings.sortOrder === SortOrder.Ascending ? 1 : -1;
                     }
                 }),
-        [petsDataGetter, sortKey, sortOrder]
+        [petsDataGetter, settings.sortKey, settings.sortOrder]
     );
 
     return (
@@ -43,10 +38,6 @@ export const PetsListView = ({
                     key={pet.id}
                     pet={pet}
                     listScrollerRef={listScrollerRef}
-                    sortKey={sortKey}
-                    sortOrder={sortOrder}
-                    selectedPets={selectedPets}
-                    onClick={onClickPet}
                 />
             ))}
         </ListContainer>
