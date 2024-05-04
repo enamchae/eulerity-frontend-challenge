@@ -43,7 +43,7 @@ export const PetView = ({
             // centering
             - (listScrollerRef.current?.offsetHeight ?? 0) * (1 - SCROLLER_PROPORTION) / 2
 
-            + (listScrollerRef.current?.offsetHeight ?? 0) / 2
+            + (listScrollerRef.current?.offsetHeight ?? 0) * 0.45
         ) / ((listScrollerRef.current?.offsetHeight ?? 1) * SCROLLER_PROPORTION);
 
         const yProportionClamped = Math.tanh(yProportion * 2 - 1);
@@ -63,7 +63,7 @@ export const PetView = ({
         };
     }, [updateMovementProgress, listScrollerRef]);
 
-    useEffect(updateMovementProgress, [updateMovementProgress, settings.sortKey, settings.sortOrder]);
+    useEffect(updateMovementProgress, [updateMovementProgress, settings.sortKey, settings.sortOrder, settings.searchQuery]);
 
     return (
         <PetScrollerTransformContainer

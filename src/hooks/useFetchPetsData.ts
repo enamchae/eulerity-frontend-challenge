@@ -9,32 +9,35 @@ enum PromiseState {
 }
 
 export type PetsDataGetter = {
-    tryGet(): Pet[],
+    getElseThrowPromise(): Pet[],
+    getElseEmptyArray(): Pet[],
 };
 
-export const useFetchPetsData = (): PetsDataGetter => {
-    const [promise, setPromise] = useState(Promise.resolve());
-    const [promiseState, setPromiseState] = useState(PromiseState.Pending);
-    const [petsData, setPetsData] = useState<Pet[]>([]);
+let fetched = false;
+let promise = Promise.resolve();
+let promiseState = PromiseState.Pending;
+let petsData: Pet[] = [];
 
+export const useFetchPetsData = (): PetsDataGetter => {
     useEffect(() => {
-        setPromise(
-            fetch("/pets")
-                    .then(response => response.text())
-                    .then(
-                        text => {
-                            setPromiseState(PromiseState.Fulfilled);
-                            setPetsData(Pet.listJson(Json5.parse(text)));
-                        },
-                        () => {
-                            setPromiseState(PromiseState.Rejected);
-                        },
-                    )
-        );
+        if (fetched) return;
+        fetched = true;
+
+        promise = fetch("/pets")
+                .then(response => response.text())
+                .then(
+                    text => {
+                        promiseState = PromiseState.Fulfilled;
+                        petsData = Pet.listJson(Json5.parse(text));
+                    },
+                    () => {
+                        promiseState = PromiseState.Rejected;
+                    },
+                );
     }, []);
 
     return {
-        tryGet() {
+        getElseThrowPromise() {
             switch (promiseState) {
                 case PromiseState.Fulfilled:
                     return petsData;
@@ -45,6 +48,10 @@ export const useFetchPetsData = (): PetsDataGetter => {
                 case PromiseState.Rejected:
                     throw new Error();
             }
+        },
+
+        getElseEmptyArray() {
+            return petsData;
         },
     };
 };

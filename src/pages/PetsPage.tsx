@@ -1,6 +1,5 @@
 import { Suspense, useRef } from "react";
 import "@/App.css";
-import { useFetchPetsData } from "@/hooks/useFetchPetsData";
 import { PetsListView } from "@/components/PetsListView";
 import styled from "styled-components";
 import { ControlBar } from "@/components/ControlBar";
@@ -8,8 +7,6 @@ import { Loading } from "@/components/Loading";
 import { TitleBar } from "@/components/TitleBar";
 
 export const PetsPage = () => {
-    const petsDataGetter = useFetchPetsData();
-    
     const listScrollerRef = useRef<HTMLDivElement>(null);
 
     return (
@@ -20,10 +17,7 @@ export const PetsPage = () => {
                 ref={listScrollerRef}
             >
                 <Suspense fallback={<Loading />}>
-                    <PetsListView
-                        petsDataGetter={petsDataGetter}
-                        listScrollerRef={listScrollerRef}
-                    />
+                    <PetsListView listScrollerRef={listScrollerRef} />
                 </Suspense>
 
                 {/* To ensure that the empty 1st and 3rd grid rows can be scrolled into (functioning as padding) */}
@@ -66,7 +60,7 @@ grid-area: 1/1 / -1/1;
 overflow-y: auto;
 overflow-x: hidden;
 display: grid;
-grid-auto-rows: 50vh 1fr 50vh;
+grid-auto-rows: 45vh 1fr 45vh;
 min-height: 100%;
 padding-left: var(--side-padding);
 padding-right: var(--side-padding);

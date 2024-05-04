@@ -1,4 +1,4 @@
-import { PetsDataGetter } from "@/hooks/useFetchPetsData";
+import { useFetchPetsData } from "@/hooks/useFetchPetsData";
 import { PetView } from "./PetView";
 import styled from "styled-components";
 import { useAtom } from "jotai";
@@ -7,17 +7,17 @@ import { SortKey, SortOrder } from "$/Settings";
 import { settingsAtom } from "@/store";
 
 export const PetsListView = ({
-    petsDataGetter,
     listScrollerRef,
 }: {
-    petsDataGetter: PetsDataGetter,
     listScrollerRef: RefObject<HTMLDivElement>,
 }) => {
+    const petsDataGetter = useFetchPetsData();
+
     const [settings, setSettings] = useAtom(settingsAtom);
 
-    const petsList = useMemo(
-        () => petsDataGetter.tryGet()
-                // naive searching
+    // naive searching
+    const petsListFiltered = useMemo(
+        () => petsDataGetter.getElseThrowPromise()
                 .filter(pet => {
                     if (settings.searchQuery.length === 0) return true;
 
@@ -34,8 +34,12 @@ export const PetsListView = ({
                         }
                     }
                     return false;
-                })
+                }),
+        [petsDataGetter, settings.searchQuery]
+    );
 
+    const petsList = useMemo(
+        () => petsListFiltered
                 //sorting
                 .sort((a, b) => {
                     const aBeforeB = settings.sortKey === SortKey.CreationTime
@@ -48,7 +52,7 @@ export const PetsListView = ({
                         return settings.sortOrder === SortOrder.Ascending ? 1 : -1;
                     }
                 }),
-        [petsDataGetter, settings.sortKey, settings.sortOrder, settings.searchQuery]
+        [petsListFiltered, settings.sortKey, settings.sortOrder]
     );
 
     return (

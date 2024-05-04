@@ -5,12 +5,15 @@ import { Button } from "./Button";
 import { selectedPetsAtom, settingsAtom } from "@/store";
 import { ClickAction, SortKey, SortOrder } from "$/Settings";
 import { baseInputCss } from "@/styles";
+import { useFetchPetsData } from "@/hooks/useFetchPetsData";
 
 export const ControlBar = ({
     onSortChange,
 }: {
     onSortChange: () => void,
 }) => {
+    const petsDataGetter = useFetchPetsData();
+
     const [settings, setSettings] = useAtom(settingsAtom);
     const [selectedPets, setSelectedPets] = useAtom(selectedPetsAtom);
 
@@ -83,6 +86,13 @@ export const ControlBar = ({
                             }}
                         >
                             Clear selection
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                setSelectedPets(new Set(petsDataGetter.getElseEmptyArray()));
+                            }}
+                        >
+                            Select all
                         </Button>
                     </ControlBarSegment>
                 }
