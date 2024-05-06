@@ -1,14 +1,25 @@
+import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { Layout } from "./Layout";
 
 export const ErrorPage = () => {
     return (
-        <Grid>Encountered an error :(</Grid>
-    )
+        <Layout>
+            <Grid>
+                <div>
+                    <div>Encountered an error :(</div>
+                    <Link to="/">
+                        Return home?
+                    </Link>
+                </div>
+            </Grid>
+        </Layout>
+    );
 };
 
 const Grid = styled.div`
 display: grid;
 width: 100vw;
 height: 100vh;
-place-items: center;
+align-items: center;
 `

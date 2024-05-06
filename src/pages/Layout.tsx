@@ -1,11 +1,16 @@
 import "@/App.css";
+import { ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import styled from "styled-components";
 
-export const Layout = () => {
+export const Layout = ({
+    children=null,
+}: {
+    children?: ReactNode,
+}) => {
     return (
         <AppContainer>
-            <Outlet />
+            {children ?? <Outlet />}
         </AppContainer>
     );
 };

@@ -9,6 +9,15 @@ export const fadeIn = keyframes`
 }
 `;
 
+export const fadeOut = keyframes`
+0% {
+    opacity: 1;
+}
+100% {
+    opacity: 0;
+}
+`;
+
 export const resetInputCss = css`
 border: none;
 background: none;

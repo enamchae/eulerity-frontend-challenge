@@ -1,6 +1,6 @@
 import { Pet } from "$/Pet";
 import { viewingPetInfoAtom } from "@/store";
-import { fadeIn } from "@/styles";
+import { fadeIn, fadeOut } from "@/styles";
 import { useAtom } from "jotai";
 import styled, { css } from "styled-components";
 import { ButtonX } from "./ButtonX";
@@ -10,18 +10,21 @@ import { Button } from "./Button";
 export const PetInfoOverlay = ({
     pet,
     onClose=() => {},
+    visible,
 }: {
     pet: Pet,
     onClose?: () => void,
+    visible: boolean,
 }) => {
     const [viewingPetInfo, setViewingPetInfo] = useAtom(viewingPetInfoAtom);
+
 
     const closeDialog = useCallback(() => {
         setViewingPetInfo(null);
         history.pushState({}, "", "/");
 
         onClose();
-    }, [setViewingPetInfo]);
+    }, [setViewingPetInfo, onClose]);
 
     useEffect(() => {
         const onPressEscape = (event: KeyboardEvent) => {
@@ -34,10 +37,19 @@ export const PetInfoOverlay = ({
         return () => {
             removeEventListener("keydown", onPressEscape);
         };
-    }, []);
+    }, [closeDialog]);
+
+    if (!pet) {
+        return (
+            <></>
+        );
+    }
 
     return (
-        <Overlay onClick={closeDialog}>
+        <Overlay
+            onClick={closeDialog}
+            $entering={visible}
+        >
             <Dialog onClick={event => event.stopPropagation()}>
                 <PetImagePositioner>
                     <PetImageLink
@@ -87,7 +99,9 @@ export const PetInfoOverlay = ({
     );
 };
 
-const Overlay = styled.div`
+const Overlay = styled.div.attrs<{
+    $entering: boolean,
+}>(props => props)`
 --overlay-padding: 2rem;
 
 width: 100vw;
@@ -99,7 +113,10 @@ backdrop-filter: blur(8px);
 
 z-index: 1;
 
-animation: ${fadeIn} .5s ease-in-out;
+
+pointer-events: ${props => props.$entering ? "auto" : "none"};
+
+animation: ${props => props.$entering ? fadeIn : fadeOut} 0.5s forwards ease-in-out;
 `;
 
 const Dialog = styled.div`
@@ -186,29 +203,35 @@ text-align: left;
 const PetTitle = styled.h1`
 margin: 1rem 0;
 font-size: 5rem;
+
+@media screen and (max-width: 1280px) {
+    font-size: 2.5rem;
+}
 `;
 
 const PetDesc = styled.div`
 font-size: 2rem;
+
+@media screen and (max-width: 1280px) {
+    font-size: 1.5rem;
+}
 `;
 
 const PetLink = styled.a`
 font-size: 1.5rem;
-text-decoration: underline;
-color: currentcolor;
 
-&:hover {
-    filter: brightness(3);
-}
-
-&:active {
-    filter: brightness(0.5);
+@media screen and (max-width: 1280px) {
+    font-size: 1rem;
 }
 `;
 
 const downloadButtonCss = css`
 font-size: 1.5rem;
 margin: 2rem 0;
+
+@media screen and (max-width: 1280px) {
+    font-size: 1rem;
+}
 `;
 
 const closeButtonCss = css`

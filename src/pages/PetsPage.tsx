@@ -1,4 +1,4 @@
-import { Suspense, useRef } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import "@/App.css";
 import { PetsListView } from "@/components/PetsListView";
 import styled from "styled-components";
@@ -12,6 +12,12 @@ import { PetInfoOverlay } from "@/components/PetInfoOverlay";
 export const PetsPage = () => {
     const [visiblePets, setVisiblePets] = useAtom(visiblePetsAtom);
     const [viewingPetInfo, setViewingPetInfo] = useAtom(viewingPetInfoAtom);
+
+    const [lastPetViewed, setLastPetViewed] = useState(viewingPetInfo);
+    useEffect(() => {
+        if (!viewingPetInfo) return;
+        setLastPetViewed(viewingPetInfo);
+    }, [viewingPetInfo]);
 
     const listScrollerRef = useRef<HTMLDivElement>(null);
 
@@ -42,10 +48,10 @@ export const PetsPage = () => {
                 }}
             />
 
-            {
-                viewingPetInfo &&
-                <PetInfoOverlay pet={viewingPetInfo} />
-            }
+            <PetInfoOverlay
+                pet={lastPetViewed}
+                visible={Boolean(viewingPetInfo)}
+            />
         </Grid>
     );
 };

@@ -9,8 +9,9 @@ export const PetInfoPage = () => {
 
     return (
         <PetInfoOverlay
-            pet={pet}
+            pet={pet ?? null}
             onClose={() => navigate("/")}
+            visible={Boolean(pet)}
         />
     );
 };
