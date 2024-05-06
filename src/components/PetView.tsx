@@ -2,7 +2,7 @@ import { Pet } from "$/Pet";
 import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import { useAtom } from "jotai";
 import styled, { keyframes } from "styled-components";
-import { fadeIn } from "@/styles";
+import { fadeIn, resetInputCss } from "@/styles";
 import { selectedPetsAtom, settingsAtom, viewingPetInfoAtom } from "@/store";
 import { ClickAction } from "@/lib/Settings";
 
@@ -116,7 +116,7 @@ export const PetView = ({
 
 /** Handles the transform of the pet entry due to the list scroll position */
 //@ts-ignore
-const PetScrollerTransformContainer = styled.div.attrs<{
+const PetScrollerTransformContainer = styled.button.attrs<{
     $rotation: number,
     $translation: number,
     $animationLag: number,
@@ -135,11 +135,16 @@ const PetScrollerTransformContainer = styled.div.attrs<{
 --animation-lag: 1s;
 --animation-easing: cubic-bezier(.2,1.4,.4,1);
 
+${resetInputCss}
+
 display: grid;
 
 cursor: pointer;
 
 user-select: none;
+
+outline-offset: 1rem;
+border-radius: 2.5rem;
 
 backface-visibility: hidden;
 transform:
@@ -152,7 +157,9 @@ z-index: 0;
 transition: z-index calc(var(--animation-lag) / 2) steps(1, end);
 animation: ${fadeIn} var(--animation-lag) ease-out;
 
-&:hover {
+
+&:hover,
+&:focus {
     z-index: 1;
 
     .interaction-transform-container {
