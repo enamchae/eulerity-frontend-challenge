@@ -84,6 +84,25 @@ transform:
         translateY(calc(-50% * (1 - var(--movement-progress))));
 transform-origin: top;
 
+--text-shadow-color: rgba(255, 255, 255, calc(2 * (0.6 - var(--movement-progress))));
+--stroke-width: 2px;
+--n-stroke-width: calc(-1 * var(--stroke-width));
+--stroke-diagonal-offset: calc(var(--stroke-width) / 1.41421356237);
+--n-stroke-diagonal-offset: calc(-1 * var(--stroke-diagonal-offset));
+text-shadow:
+        0 0 16px var(--text-shadow-color),
+        0 0 8px var(--text-shadow-color),
+        0 0 4px var(--text-shadow-color),
+        0 0 2px var(--text-shadow-color),
+        var(--stroke-width) 0 var(--text-shadow-color),
+        var(--n-stroke-width) 0 var(--text-shadow-color),
+        0 var(--stroke-width) var(--text-shadow-color),
+        0 var(--n-stroke-width) var(--text-shadow-color),
+        var(--stroke-diagonal-offset) var(--stroke-diagonal-offset) var(--text-shadow-color),
+        var(--stroke-diagonal-offset) var(--n-stroke-diagonal-offset) var(--text-shadow-color),
+        var(--n-stroke-diagonal-offset) var(--stroke-diagonal-offset) var(--text-shadow-color),
+        var(--n-stroke-diagonal-offset) var(--n-stroke-diagonal-offset) var(--text-shadow-color);
+
 color: ${props => props.$useShadowColor ? "#fff" : "currentcolor"};
 `;
 
@@ -94,6 +113,7 @@ margin: 0;
 
 const Subtitle = styled.div`
 font-size: 1.15rem;
+font-weight: 500;
 
 transform: scale(calc(1.25 * var(--movement-progress) + (1 - var(--movement-progress))));
 `;
