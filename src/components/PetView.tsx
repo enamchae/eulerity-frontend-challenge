@@ -27,6 +27,15 @@ export const PetView = ({
     useEffect(() => {
         setAnimationLag(Math.random() + 0.5);
         setAnimationOvershoot(Math.random() + 1.2);
+
+        const onpointerup = () => {
+            containerRef.current?.blur();
+        };
+        addEventListener("pointerup", onpointerup);
+
+        return () => {
+            removeEventListener("pointerup", onpointerup);
+        };
     }, []);
 
     
