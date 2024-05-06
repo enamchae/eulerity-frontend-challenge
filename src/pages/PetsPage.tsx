@@ -66,8 +66,6 @@ height: 100vh;
 `
 
 const PetsListScroller = styled.div`
---half-height: 0;
-
 overflow-y: auto;
 overflow-x: hidden;
 display: grid;
