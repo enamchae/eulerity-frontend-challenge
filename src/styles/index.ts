@@ -60,3 +60,16 @@ export const buttonClickEffectCss = css`
     color: #fff;
 }
 `;
+
+export const linkCss = css`
+text-decoration: underline;
+color: currentcolor;
+
+&:hover {
+    filter: brightness(3);
+}
+
+&:active {
+    filter: brightness(0.5);
+}
+`;

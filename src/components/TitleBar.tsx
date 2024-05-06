@@ -48,11 +48,11 @@ export const TitleBar = ({
     );
 };
 
-//@ts-ignore
 const TitleBarContainer = styled.div.attrs<{ $movementProgress: number }>(props => ({
+    ...props,
     style: {
         "--movement-progress": props.$movementProgress,
-    }
+    } as any,
 }))`
 --movement-progress: 0;
 

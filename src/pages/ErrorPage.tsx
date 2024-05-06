@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { Layout } from "./Layout";
+import { linkCss } from "@/styles";
 
 export const ErrorPage = () => {
     return (
@@ -8,9 +9,9 @@ export const ErrorPage = () => {
             <Grid>
                 <div>
                     <div>Encountered an error! Likely the page you’re looking for doesn’t exist. :(</div>
-                    <Link to="/">
+                    <ReturnLink to="/">
                         Return home?
-                    </Link>
+                    </ReturnLink>
                 </div>
             </Grid>
         </Layout>
@@ -22,4 +23,8 @@ display: grid;
 width: 100vw;
 height: 100vh;
 align-items: center;
-`
+`;
+
+const ReturnLink = styled(Link)`
+${linkCss}
+`;

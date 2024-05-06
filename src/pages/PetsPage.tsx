@@ -76,6 +76,8 @@ min-height: 100%;
 padding-left: var(--side-padding);
 padding-right: var(--side-padding);
 
+perspective: 1200px;
+
 mask: linear-gradient(#0000, #000 30vh, #000 70vh, #0000);
 `;
 

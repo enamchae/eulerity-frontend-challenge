@@ -20,7 +20,7 @@ export const PetView = ({
     const [rotation, setRotation] = useState(0);
     const [translation, setTranslation] = useState(0);
     const [animationLag, setAnimationLag] = useState(0);
-    const [animationOvershoot, setAnimationOvershoot] = useState(0)
+    const [animationOvershoot, setAnimationOvershoot] = useState(0);
 
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -71,6 +71,7 @@ export const PetView = ({
 
     return (
         <PetScrollerTransformContainer
+            //@ts-ignore
             ref={containerRef}
             $rotation={rotation}
             $translation={translation}
@@ -124,20 +125,19 @@ export const PetView = ({
 };
 
 /** Handles the transform of the pet entry due to the list scroll position */
-//@ts-ignore
 const PetScrollerTransformContainer = styled.button.attrs<{
     $rotation: number,
     $translation: number,
     $animationLag: number,
     $animationOvershoot: number,
-    //@ts-ignore
 }>(props => ({
+    ...props,
     style: {
         "--rotation": `${props.$rotation}rad`,
         "--translation": `${props.$translation * innerHeight}px`,
         "--animation-lag": `${props.$animationLag}s`,
         "--animation-easing": `cubic-bezier(.2,${props.$animationLag},.4,1)`,
-    },
+    } as any,
 }))`
 --rotation: 0rad;
 --translation: 0;

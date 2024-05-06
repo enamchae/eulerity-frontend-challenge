@@ -1,6 +1,6 @@
 import { Pet } from "$/Pet";
 import { viewingPetInfoAtom } from "@/store";
-import { fadeIn, fadeOut } from "@/styles";
+import { fadeIn, fadeOut, linkCss } from "@/styles";
 import { useAtom } from "jotai";
 import styled, { css } from "styled-components";
 import { ButtonX } from "./ButtonX";
@@ -12,7 +12,7 @@ export const PetInfoOverlay = ({
     onClose=() => {},
     visible,
 }: {
-    pet: Pet,
+    pet: Pet | null,
     onClose?: () => void,
     visible: boolean,
 }) => {
@@ -39,7 +39,7 @@ export const PetInfoOverlay = ({
         };
     }, [closeDialog]);
 
-    if (!pet) {
+    if (pet === null) {
         return (
             <></>
         );
@@ -218,6 +218,8 @@ font-size: 2rem;
 `;
 
 const PetLink = styled.a`
+${linkCss}
+
 font-size: 1.5rem;
 
 @media screen and (max-width: 1280px) {

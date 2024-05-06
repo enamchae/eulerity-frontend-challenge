@@ -2,7 +2,7 @@ import { useFetchPetsData } from "@/hooks/useFetchPetsData";
 import { PetView } from "./PetView";
 import styled from "styled-components";
 import { useAtom } from "jotai";
-import { RefObject, useEffect, useMemo } from "react";
+import { RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SortKey, SortOrder } from "$/Settings";
 import { settingsAtom, visiblePetsAtom } from "@/store";
 
@@ -75,6 +75,9 @@ export const PetsListView = ({
 
 const ListContainer = styled.div`
 --n-columns: 4;
+--scroll-distance: 0;
+--page-offset-x: 0;
+--page-offset-y: 0;
 
 grid-area: 2/1;
 
@@ -83,7 +86,7 @@ grid-template-columns: repeat(var(--n-columns), 1fr);
 grid-auto-rows: 16rem;
 gap: 1rem;
 
-perspective: 1200px;
+transform-style: preserve-3d;
 
 align-items: stretch;
 
