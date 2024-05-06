@@ -7,7 +7,7 @@ export const ErrorPage = () => {
         <Layout>
             <Grid>
                 <div>
-                    <div>Encountered an error :(</div>
+                    <div>Encountered an error! Likely the page you’re looking for doesn’t exist. :(</div>
                     <Link to="/">
                         Return home?
                     </Link>
