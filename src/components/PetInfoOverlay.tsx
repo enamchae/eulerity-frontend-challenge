@@ -115,6 +115,9 @@ z-index: 1;
 
 
 pointer-events: ${props => props.$entering ? "auto" : "none"};
+* {
+    pointer-events: ${props => props.$entering ? "auto" : "none"};
+}
 
 animation: ${props => props.$entering ? fadeIn : fadeOut} 0.5s forwards ease-in-out;
 `;
