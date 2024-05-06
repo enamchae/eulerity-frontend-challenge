@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 import styled, { keyframes } from "styled-components";
 import { fadeIn, resetInputCss } from "@/styles";
 import { selectedPetsAtom, settingsAtom, viewingPetInfoAtom } from "@/store";
-import { ClickAction } from "@/lib/Settings";
+import { ClickAction } from "$/Settings";
 
 export const PetView = ({
     pet,
@@ -161,7 +161,7 @@ border-radius: 2.5rem;
 
 backface-visibility: hidden;
 transform:
-        translateZ(var(--translation))
+        translateZ(calc(var(--translation) + var(--FIREFOX-HITBOX-CORRECTION-TRANSLATION)))
         rotateX(var(--rotation));
 transform-style: preserve-3d;
 
@@ -277,7 +277,7 @@ const PetImage = styled.img.attrs<{
 --container-height: 0;
 
 grid-area: 1/1;
-place-self: center;
+margin: auto;
 
 align-self: stretch;
 justify-self: stretch;

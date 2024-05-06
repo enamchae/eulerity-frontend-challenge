@@ -87,6 +87,7 @@ grid-auto-rows: 16rem;
 gap: 1rem;
 
 transform-style: preserve-3d;
+transform: translateZ(calc(-1 * var(--FIREFOX-HITBOX-CORRECTION-TRANSLATION)));
 
 align-items: stretch;
 
