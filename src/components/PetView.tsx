@@ -98,7 +98,11 @@ export const PetView = ({
                 className="interaction-transform-container"
                 $selected={selectedPets.has(pet)}
             >
-                <PetImage src={pet.imageUrl} />
+                <PetImage
+                    src={pet.imageUrl}
+                    $containerWidth={containerRef.current?.offsetWidth ?? 0}
+                    $containerHeight={containerRef.current?.offsetHeight ?? 0}
+                />
 
                 <PetTextContainer
                     className="pet-text-container"
@@ -231,7 +235,9 @@ const PetInteractionTransformContainer = styled.div.attrs<{
     $selected: boolean,
 }>(props => props)`
 display: grid;
+grid-template-rows: 1fr;
 overflow: hidden;
+height: 100%;
 border: ${props => props.$selected ? "2.5rem" : "0"} solid #0000;
 
 outline-offset: -1.5rem;
@@ -255,13 +261,26 @@ animation-play-state: ${props => props.$selected ? "running" : "paused"};
 }
 `;
 
-const PetImage = styled.img`
+const PetImage = styled.img.attrs<{
+    $containerWidth: number,
+    $containerHeight: number,
+}>(props => ({
+    ...props,
+    style: {
+        "--container-width": `${props.$containerWidth}px`,
+        "--container-height": `${props.$containerHeight}px`,
+    } as any,
+}))`
+--container-width: 0;
+--container-height: 0;
+
 grid-area: 1/1;
+place-self: center;
 
 align-self: stretch;
 justify-self: stretch;
-height: 100%;
-width: 100%;
+width: var(--container-width);
+height: var(--container-height);
 object-fit: cover;
 
 transition:
@@ -285,6 +304,7 @@ transition: padding .5s ease-in-out;
 `;
 
 const PetText = styled.div`
+place-self: end;
 display: flex;
 flex-direction: column;
 justify-content: end;

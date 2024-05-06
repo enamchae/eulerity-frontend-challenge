@@ -40,7 +40,7 @@ export const TitleBar = ({
 
     return (
         <TitleBarContainer $movementProgress={titleMovementProgress}>
-            <ListTitle>
+            <ListTitle $useShadowColor={titleMovementProgress > 0.6}>
                 <Title>These are my pets!</Title>
                 <Subtitle>(no they are not “wild animals” you cannot take them away from me :( )</Subtitle>
             </ListTitle>
@@ -69,7 +69,9 @@ pointer-events: none;
 z-index: 1;
 `;
 
-const ListTitle = styled.div`
+const ListTitle = styled.div.attrs<{
+    $useShadowColor: boolean,
+}>(props => props)`
 position: absolute;
 width: calc(100% - 2 * var(--side-padding));
 top: calc(2rem * var(--movement-progress) + 25vh * (1 - var(--movement-progress)));
@@ -82,8 +84,7 @@ transform:
         translateY(calc(-50% * (1 - var(--movement-progress))));
 transform-origin: top;
 
-text-shadow: 0 0 #fff;
-color: rgba(24, 58, 47, calc(round(1.1 - var(--movement-progress))));
+color: ${props => props.$useShadowColor ? "#fff" : "currentcolor"};
 `;
 
 const Title = styled.h1`
