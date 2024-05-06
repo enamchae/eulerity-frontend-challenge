@@ -100,6 +100,7 @@ export const PetView = ({
             >
                 <PetImage
                     src={pet.imageUrl}
+                    alt={pet.title}
                     $containerWidth={containerRef.current?.offsetWidth ?? 0}
                     $containerHeight={containerRef.current?.offsetHeight ?? 0}
                 />

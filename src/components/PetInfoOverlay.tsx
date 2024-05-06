@@ -51,12 +51,20 @@ export const PetInfoOverlay = ({
             $entering={visible}
         >
             <Dialog onClick={event => event.stopPropagation()}>
+                <ButtonX
+                    onClick={closeDialog}
+                    style={closeButtonCss}
+                />
+
                 <PetImagePositioner>
                     <PetImageLink
                         href={pet.imageUrl}
                         target="_blank"
                     >
-                        <PetImage src={pet.imageUrl} />
+                        <PetImage
+                            src={pet.imageUrl}
+                            alt={pet.title}
+                        />
                     </PetImageLink>
                 </PetImagePositioner>
 
@@ -89,11 +97,6 @@ export const PetInfoOverlay = ({
                         {pet.url}
                     </PetLink>
                 </PetDetails>
-
-                <ButtonX
-                    onClick={closeDialog}
-                    style={closeButtonCss}
-                />
             </Dialog>
         </Overlay>
     );
@@ -132,17 +135,14 @@ position: relative;
 grid-template-columns: 2fr 3fr;
 @media screen and (max-width: 1280px) {
     grid-template-columns: unset;
-    grid-template-rows: 2fr 3fr;
+    grid-template-rows: auto 2fr 3fr;
+    padding-top: var(--overlay-padding);
 }
 
 align-items: stretch;
 
 background: #ffffffcf;
 border-radius: 6rem / 4rem;
-
-> * {
-    padding: var(--overlay-padding);
-}
 `;
 
 const PetImagePositioner = styled.div`
@@ -150,7 +150,9 @@ display: grid;
 place-items: center;
 width: 100%;
 height: calc(100vh - 4 * var(--overlay-padding));
+padding: var(--overlay-padding);
 place-self: center;
+
 @media screen and (max-width: 1280px) {
     width: unset;
     height: 20rem;
@@ -192,6 +194,7 @@ display: flex;
 flex-direction: column;
 align-items: start;
 justify-content: center;
+padding: var(--overlay-padding);
 
 text-align: left;
 
@@ -244,4 +247,11 @@ position: absolute;
 top: var(--overlay-padding);
 right: var(--overlay-padding);
 font-size: 2rem;
+place-self: center;
+padding: 2rem;
+
+
+@media screen and (max-width: 1280px) {
+    position: unset;
+}
 `;
