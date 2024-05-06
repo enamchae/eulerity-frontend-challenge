@@ -234,11 +234,13 @@ const selectedPulsate = keyframes`
 const PetInteractionTransformContainer = styled.div.attrs<{
     $selected: boolean,
 }>(props => props)`
+--border-width: ${props => props.$selected ? "2.5rem" : "0px"};
+
 display: grid;
 grid-template-rows: 1fr;
 overflow: hidden;
 height: 100%;
-border: ${props => props.$selected ? "2.5rem" : "0"} solid #0000;
+border: var(--border-width) solid #0000;
 
 outline-offset: -1.5rem;
 outline: ${props => props.$selected ? "0.5rem" : "0"} solid;
@@ -251,7 +253,7 @@ filter: brightness(${props => props.$selected ? "1.25": "1"});
 
 transition:
         transform var(--animation-lag) var(--animation-easing),
-        border .5s var(--animation-easing),
+        border-width .5s var(--animation-easing),
         outline .5s var(--animation-easing);
 animation: ${selectedPulsate} 1s infinite alternate ease-in-out;
 animation-play-state: ${props => props.$selected ? "running" : "paused"};
@@ -279,11 +281,13 @@ place-self: center;
 
 align-self: stretch;
 justify-self: stretch;
-width: var(--container-width);
-height: var(--container-height);
+width: calc(var(--container-width) - 2 * var(--border-width));
+height: calc(var(--container-height) - 2 * var(--border-width));
 object-fit: cover;
 
 transition:
+        width .5s var(--animation-easing),
+        height .5s var(--animation-easing),
         transform .5s cubic-bezier(.18,1.56,.44,.99),
         filter .125s ease-in-out;
 `;
