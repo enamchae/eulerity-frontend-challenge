@@ -4,7 +4,7 @@ import { fadeIn } from "@/styles";
 import { useAtom } from "jotai";
 import styled, { css } from "styled-components";
 import { ButtonX } from "./ButtonX";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { Button } from "./Button";
 
 export const PetInfoOverlay = ({
@@ -22,6 +22,19 @@ export const PetInfoOverlay = ({
 
         onClose();
     }, [setViewingPetInfo]);
+
+    useEffect(() => {
+        const onPressEscape = (event: KeyboardEvent) => {
+            if (event.key !== "Escape") return;
+            closeDialog();
+        };
+
+        addEventListener("keydown", onPressEscape);
+
+        return () => {
+            removeEventListener("keydown", onPressEscape);
+        };
+    }, []);
 
     return (
         <Overlay onClick={closeDialog}>
